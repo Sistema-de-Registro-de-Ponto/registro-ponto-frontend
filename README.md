@@ -6,11 +6,7 @@
 
 ### Variáveis de ambiente
 
-### Execução do backend
-
 ### Execução do frontend
-
-### Execução do RPA
 
 ### Credenciais de teste
 
