@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../auth/presentation/view_models/auth_session_controller.dart';
 import '../view_models/counter_view_model.dart';
 
 class CounterPage extends ConsumerWidget {
@@ -10,10 +11,21 @@ class CounterPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final count = ref.watch(counterViewModelProvider);
     final viewModel = ref.read(counterViewModelProvider.notifier);
+    final session = ref.watch(authSessionControllerProvider).value;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Contador (POC Riverpod)'),
+        title: Text(session != null
+            ? 'Olá, ${session.user.username}'
+            : 'Contador'),
+        actions: [
+          IconButton(
+            tooltip: 'Sair',
+            onPressed: () =>
+                ref.read(authSessionControllerProvider.notifier).clear(),
+            icon: const Icon(Icons.logout),
+          ),
+        ],
       ),
       body: Center(
         child: Column(
