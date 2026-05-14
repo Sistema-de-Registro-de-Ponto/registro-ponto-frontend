@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter *)",
+      "Bash(curl -s \"https://pub.dev/api/packages/riverpod_generator\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('latest:', d['latest']['version']\\); print\\('all versions:'\\); [print\\(v['version']\\) for v in d['versions'][-15:]]\")",
+      "Bash(dart run *)"
+    ]
+  }
+}
