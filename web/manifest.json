@@ -1,11 +1,11 @@
 {
-    "name": "registro_ponto_frontend",
-    "short_name": "registro_ponto_frontend",
+    "name": "Registro de Ponto",
+    "short_name": "Registro de Ponto",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#1E6FD9",
+    "theme_color": "#1E6FD9",
+    "description": "Registro de Ponto — controle de ponto para colaboradores.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

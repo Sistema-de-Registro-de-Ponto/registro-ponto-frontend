@@ -1,14 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../domain/failures/auth_failure.dart';
-
 class LoginState extends Equatable {
   final String username;
   final String password;
   final bool passwordVisible;
   final bool isLoading;
-  final AuthFailure? failure;
+  final String? failure;
 
   const LoginState({
     this.username = '',
@@ -23,7 +21,7 @@ class LoginState extends Equatable {
     String? password,
     bool? passwordVisible,
     bool? isLoading,
-    ValueGetter<AuthFailure?>? failure,
+    ValueGetter<String?>? failure,
   }) {
     return LoginState(
       username: username ?? this.username,
@@ -35,6 +33,5 @@ class LoginState extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [username, password, passwordVisible, isLoading, failure];
+  List<Object?> get props => [username, password, passwordVisible, isLoading, failure];
 }

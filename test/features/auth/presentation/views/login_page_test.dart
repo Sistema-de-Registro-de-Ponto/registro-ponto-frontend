@@ -7,7 +7,6 @@ import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/auth/data/repositories/auth_repository_provider.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/auth_session.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/user.dart';
-import 'package:registro_ponto_frontend/features/auth/domain/failures/auth_failure.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/repositories/auth_repository.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/views/login_page.dart';
 
@@ -55,7 +54,7 @@ void main() {
 
   testWidgets('submete credenciais ao tocar em Entrar', (tester) async {
     when(() => repo.login(username: 'colaborador', password: '12345678'))
-        .thenAnswer((_) async => const Success(AuthSession(
+        .thenAnswer((_) async => const Success<AuthSession, String>(AuthSession(
               token: 't',
               tokenType: 'Bearer',
               user: User(username: 'colaborador', roles: []),
@@ -74,7 +73,7 @@ void main() {
 
   testWidgets('mostra mensagem amigável quando login falha com 401', (tester) async {
     when(() => repo.login(username: 'colaborador', password: 'wrong'))
-        .thenAnswer((_) async => const Failure(InvalidCredentialsFailure()));
+        .thenAnswer((_) async => const Failure<AuthSession, String>('Usuário ou senha inválidos.'));
 
     await tester.pumpWidget(_harness(repo));
 
@@ -90,7 +89,7 @@ void main() {
     when(() => repo.login(username: 'colaborador', password: '12345678'))
         .thenAnswer((_) => Future.delayed(
               const Duration(milliseconds: 200),
-              () => const Success(AuthSession(
+              () => const Success<AuthSession, String>(AuthSession(
                 token: 't',
                 tokenType: 'Bearer',
                 user: User(username: 'colaborador', roles: []),

@@ -5,7 +5,6 @@ import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/auth/data/repositories/auth_repository_provider.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/auth_session.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/user.dart';
-import 'package:registro_ponto_frontend/features/auth/domain/failures/auth_failure.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/repositories/auth_repository.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/view_models/login_state.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/view_models/login_view_model.dart';
@@ -60,7 +59,7 @@ void main() {
 
   test('submit em sucesso transita isLoading=true -> isLoading=false sem failure', () async {
     when(() => repo.login(username: username, password: password))
-        .thenAnswer((_) async => const Success(session));
+        .thenAnswer((_) async => const Success<AuthSession, String>(session));
 
     notifier().setUsername(username);
     notifier().setPassword(password);
@@ -73,9 +72,10 @@ void main() {
     expect(readState().failure, isNull);
   });
 
-  test('submit com Failure preenche failure no state', () async {
-    when(() => repo.login(username: username, password: password))
-        .thenAnswer((_) async => const Failure(InvalidCredentialsFailure()));
+  test('submit com Failure preenche failure no state com a string', () async {
+    when(() => repo.login(username: username, password: password)).thenAnswer(
+      (_) async => const Failure<AuthSession, String>('Credenciais inválidas'),
+    );
 
     notifier().setUsername(username);
     notifier().setPassword(password);
@@ -83,20 +83,21 @@ void main() {
     await notifier().submit();
 
     expect(readState().isLoading, isFalse);
-    expect(readState().failure, const InvalidCredentialsFailure());
+    expect(readState().failure, 'Credenciais inválidas');
   });
 
   test('submit limpa a failure anterior ao iniciar nova tentativa', () async {
-    when(() => repo.login(username: username, password: password))
-        .thenAnswer((_) async => const Failure(InvalidCredentialsFailure()));
+    when(() => repo.login(username: username, password: password)).thenAnswer(
+      (_) async => const Failure<AuthSession, String>('Credenciais inválidas'),
+    );
 
     notifier().setUsername(username);
     notifier().setPassword(password);
     await notifier().submit();
-    expect(readState().failure, const InvalidCredentialsFailure());
+    expect(readState().failure, 'Credenciais inválidas');
 
     when(() => repo.login(username: username, password: password))
-        .thenAnswer((_) async => const Success(session));
+        .thenAnswer((_) async => const Success<AuthSession, String>(session));
     final future = notifier().submit();
     expect(readState().failure, isNull);
 

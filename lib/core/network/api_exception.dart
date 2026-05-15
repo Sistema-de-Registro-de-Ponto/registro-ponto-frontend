@@ -1,20 +1,27 @@
 import 'package:dio/dio.dart';
 
-import 'http_exception.dart';
+class ApiException implements Exception {
+  final String message;
 
-HttpException mapDioException(DioException error) {
-  return switch (error.type) {
-    DioExceptionType.connectionTimeout ||
-    DioExceptionType.sendTimeout ||
-    DioExceptionType.receiveTimeout ||
-    DioExceptionType.connectionError =>
-      const NetworkException(),
-    DioExceptionType.badResponse => ApiException(
-      statusCode: error.response?.statusCode ?? 0,
-      detail: _extractDetail(error.response?.data),
-    ),
-    _ => UnknownHttpException(error),
-  };
+  ApiException([this.message = 'Erro desconhecido']);
+
+  @override
+  String toString() => 'ApiError: $message';
+}
+
+extension DioExceptionX on DioException {
+  ApiException mapDioException() {
+    final error = this;
+
+    return switch (error.type) {
+      DioExceptionType.connectionTimeout ||
+      DioExceptionType.sendTimeout ||
+      DioExceptionType.receiveTimeout ||
+      DioExceptionType.connectionError => ApiException('Erro na conexão'),
+      DioExceptionType.badResponse => ApiException(_extractDetail(error.response?.data) ?? 'Erro _extractDetail'),
+      _ => ApiException(),
+    };
+  }
 }
 
 String? _extractDetail(dynamic data) {
@@ -23,10 +30,7 @@ String? _extractDetail(dynamic data) {
 
   final errors = data['errors'];
   if (errors is Map) {
-    final messages = errors.values
-        .whereType<String>()
-        .where((m) => m.isNotEmpty)
-        .toList();
+    final messages = errors.values.whereType<String>().where((m) => m.isNotEmpty).toList();
     if (messages.isNotEmpty) return messages.join('\n');
   }
   if (errors is List && errors.isNotEmpty) {

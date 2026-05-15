@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/utils/result.dart';
 import '../../data/repositories/auth_repository_provider.dart';
 import '../../domain/entities/auth_session.dart';
-import '../../domain/failures/auth_failure.dart';
 import '../../domain/repositories/auth_repository.dart';
 import 'auth_session_controller.dart';
 import 'login_state.dart';
@@ -24,10 +23,10 @@ class LoginViewModel extends _$LoginViewModel {
     final result = await _authRepository.login(username: state.username, password: state.password);
 
     switch (result) {
-      case Success<AuthSession, AuthFailure>():
+      case Success<AuthSession, String>():
         state = state.copyWith(isLoading: false);
         _authSessionController.setSession(result.value);
-      case Failure<AuthSession, AuthFailure>():
+      case Failure<AuthSession, String>():
         state = state.copyWith(isLoading: false, failure: () => result.error);
     }
   }

@@ -1,6 +1,6 @@
 # registro-ponto-frontend
 
-Frontend Flutter Web do sistema de registro de ponto da Player Contabilidade. A primeira feature entregue é o **login**: autenticação contra a API, sessão persistida no SecureStorage e auto-logout reativo a `401`.
+Frontend Flutter Web do sistema de registro de ponto da Player Contabilidade. Inclui **login** (autenticação na API, sessão no `SecureStorage`, auto-logout em `401`) e **área do colaborador** em `/` (shell com dashboard, histórico e perfil — ver `docs/area-colaborador.md`).
 
 ### Requisitos
 
@@ -50,7 +50,11 @@ flutter test
 flutter analyze
 ```
 
-**Logging de rede:** em `kDebugMode` (qualquer `flutter run`) o `PrettyDioLogger` imprime cada request/response do Dio no terminal — útil para inspecionar payloads do `/auth/login` e `/auth/me`. Em build de release, o logger não é registrado.
+**Logging de rede:** em `kDebugMode` (qualquer `flutter run`) o `PrettyDioLogger` imprime cada request/response do Dio no terminal — útil para inspecionar payloads do `/auth/login`, `/auth/me` e `/v1/colaborator`. Em build de release, o logger não é registrado.
+
+### Documentação adicional
+
+- **`docs/area-colaborador.md`** — rotas da home, contrato do `GET /v1/colaborator`, Riverpod (`colaboradorProfileViewModelProvider`), shell e comportamento de erro/retry.
 
 ### Credenciais de teste
 
@@ -75,18 +79,19 @@ A senha deve obedecer ao padrão `^\d{8}$` (exatamente 8 dígitos numéricos). A
                   │                              │
                   ▼                              ▼
               GET /                          GET /login
-              (CounterPage)                  (LoginPage)
+        (ColaboradorShellPage)               (LoginPage)
 ```
 
-1. **Bootstrap (`main.dart`)** — antes de `runApp`, faz `await container.read(authSessionControllerProvider.future)` para carregar a sessão persistida. Evita flash de login para quem já tem token salvo.
-2. **Router guard (`app/router.dart`)**:
+1. **Bootstrap (`main.dart`)** — inicializa formatação de datas `pt_BR` (`initializeDateFormatting`). Em seguida, `await container.read(authSessionControllerProvider.future)` carrega a sessão persistida antes de `runApp`, evitando flash de login para quem já tem token.
+2. **Router guard (`lib/app/router.dart`)**:
    - Sessão `null` + rota ≠ `/login` → redireciona para `/login`.
-   - Sessão presente + rota `/login` → redireciona para `/`.
-   - `refreshListenable` ouve o `authSessionControllerProvider`, então qualquer mudança de sessão (login/logout/401) recalcula o redirect automaticamente.
+   - Sessão presente + rota `/login` → redireciona para `/` (home do colaborador).
+   - `refreshListenable` ouve o `authSessionControllerProvider`; login, logout ou `401` recalculam o redirect.
 3. **Login** (`POST /auth/login` → `GET /auth/me`):
-   - Form com `username` + `password` (toggle de visibilidade).
-   - Em sucesso: token e dados do usuário são salvos no SecureStorage e o `AuthSessionController` é atualizado → router leva ao contador.
-   - Em falha: a mensagem do backend é exibida em um banner. Quando o backend retorna `errors: { campo: mensagem }` (RFC 7807 + extensão), as mensagens aparecem empilhadas no banner.
-4. **Header `Authorization` automático** — o `AuthInterceptor` injeta `Authorization: <tokenType> <token>` em qualquer request autenticado (exceto `/auth/login`). Não é preciso passar token manualmente em novos data sources.
-5. **Auto-logout em 401** — o mesmo `AuthInterceptor` observa respostas 401 (fora de `/auth/login`) e dispara `authSessionController.clear()`. A sessão zera, o router refaz o redirect e a aplicação volta para `/login`.
-6. **Logout manual** — ícone de "sair" no AppBar do contador chama `clear()` (limpa SecureStorage + sessão) e o router redireciona para `/login`.
+   - Form com `username` + `password` (toggle de visibilidade) e logo da marca no card.
+   - Em sucesso: token e usuário persistidos no `SecureStorage`; `AuthSessionController` atualizado → redirect para `/`.
+   - Em falha: o repositório devolve `Result` com `Failure<String>`; o estado de login guarda a mensagem e o banner (`AppErrorBanner`) exibe o texto retornado (incluindo detalhes mapeados de `errors` / `detail` quando a API responde nesse formato).
+4. **Home colaborador (`/`)** — após autenticar, `ColaboradorShellPage` dispara o carregamento do perfil (`GET /v1/colaborator`). Detalhes de abas, menu **Sair** e dashboard estão em `docs/area-colaborador.md`.
+5. **Header `Authorization` automático** — o `AuthInterceptor` injeta `Authorization: <tokenType> <token>` em requests autenticados (exceto `/auth/login`). Novos data sources podem reutilizar o mesmo `Dio` configurado em `dio_client_provider.dart`.
+6. **Auto-logout em 401** — respostas `401` fora de `/auth/login` disparam `authSessionController.clear()`; o router volta para `/login`.
+7. **Logout manual** — no shell do colaborador, o menu de perfil (`AppProfileMenu`) oferece **Sair**, chamando o mesmo fluxo de `clear()` (limpa storage + sessão) e redirect para `/login`.

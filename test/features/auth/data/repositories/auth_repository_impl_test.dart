@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:registro_ponto_frontend/core/network/http_exception.dart';
+import 'package:registro_ponto_frontend/core/network/api_exception.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:registro_ponto_frontend/features/auth/data/datasources/auth_remote_data_source.dart';
@@ -10,7 +10,6 @@ import 'package:registro_ponto_frontend/features/auth/data/models/user_dto.dart'
 import 'package:registro_ponto_frontend/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/auth_session.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/user.dart';
-import 'package:registro_ponto_frontend/features/auth/domain/failures/auth_failure.dart';
 
 class _MockAuthRemoteDataSource extends Mock implements AuthRemoteDataSource {}
 
@@ -56,24 +55,19 @@ void main() {
 
       final result = await repository.login(username: username, password: password);
 
-      expect(result, const Success<AuthSession, AuthFailure>(expectedSession));
+      expect(result, const Success<AuthSession, String>(expectedSession));
       final captured = verify(() => local.save(captureAny())).captured.single as PersistedAuthSessionDto;
       expect(captured.toEntity(), expectedSession);
     });
 
-    test('em 401 no login devolve InvalidCredentialsFailure e não persiste', () async {
+    test('em ApiException no login devolve Failure com a mensagem e não persiste', () async {
       when(
         () => remote.login(username: username, password: password),
-      ).thenThrow(const ApiException(statusCode: 401, detail: 'Credenciais inválidas'));
+      ).thenThrow(ApiException('Credenciais inválidas'));
 
       final result = await repository.login(username: username, password: password);
 
-      expect(
-        result,
-        const Failure<AuthSession, AuthFailure>(
-          InvalidCredentialsFailure(detail: 'Credenciais inválidas'),
-        ),
-      );
+      expect(result, const Failure<AuthSession, String>('Credenciais inválidas'));
       verifyNever(
         () => remote.getMe(
           token: any(named: 'token'),
@@ -83,40 +77,51 @@ void main() {
       verifyNever(() => local.save(any()));
     });
 
-    test('em falha de rede devolve NetworkFailure', () async {
-      when(() => remote.login(username: username, password: password)).thenThrow(const NetworkException());
+    test('em ApiException de rede devolve Failure com a mensagem', () async {
+      when(() => remote.login(username: username, password: password)).thenThrow(ApiException('Erro na conexão'));
 
       final result = await repository.login(username: username, password: password);
 
-      expect(result, const Failure<AuthSession, AuthFailure>(NetworkFailure()));
+      expect(result, const Failure<AuthSession, String>('Erro na conexão'));
     });
 
-    test('em 5xx devolve ServerFailure com o statusCode', () async {
-      when(() => remote.login(username: username, password: password)).thenThrow(const ApiException(statusCode: 503));
+    test('em ApiException genérica devolve Failure com a mensagem', () async {
+      when(() => remote.login(username: username, password: password)).thenThrow(ApiException('Serviço indisponível'));
 
       final result = await repository.login(username: username, password: password);
 
-      expect(result, const Failure<AuthSession, AuthFailure>(ServerFailure(503)));
+      expect(result, const Failure<AuthSession, String>('Serviço indisponível'));
     });
 
-    test('quando login OK mas getMe falha com 401, retorna UnauthorizedFailure (não InvalidCredentials)', () async {
+    test('quando login OK mas getMe lança ApiException, devolve Failure com a mensagem e não persiste', () async {
       when(() => remote.login(username: username, password: password)).thenAnswer((_) async => loginDto);
-      when(() => remote.getMe(token: token, tokenType: tokenType)).thenThrow(const ApiException(statusCode: 401));
+      when(() => remote.getMe(token: token, tokenType: tokenType)).thenThrow(ApiException('Sessão inválida'));
 
       final result = await repository.login(username: username, password: password);
 
-      expect(result, const Failure<AuthSession, AuthFailure>(UnauthorizedFailure()));
+      expect(result, const Failure<AuthSession, String>('Sessão inválida'));
+      verifyNever(() => local.save(any()));
+    });
+
+    test('quando login OK mas getMe lança erro genérico, devolve Failure com toString e não persiste', () async {
+      when(() => remote.login(username: username, password: password)).thenAnswer((_) async => loginDto);
+      when(() => remote.getMe(token: token, tokenType: tokenType)).thenThrow(Exception('falha inesperada'));
+
+      final result = await repository.login(username: username, password: password);
+
+      expect(result, isA<Failure<AuthSession, String>>());
+      expect((result as Failure<AuthSession, String>).error, 'Exception: falha inesperada');
       verifyNever(() => local.save(any()));
     });
   });
 
   group('fetchCurrentUser', () {
-    test('sem sessão persistida devolve UnauthorizedFailure', () async {
+    test('sem sessão persistida devolve Failure com mensagem fixa', () async {
       when(() => local.read()).thenAnswer((_) async => null);
 
       final result = await repository.fetchCurrentUser();
 
-      expect(result, const Failure<User, AuthFailure>(UnauthorizedFailure()));
+      expect(result, const Failure<User, String>('Não autorizado'));
       verifyNever(
         () => remote.getMe(
           token: any(named: 'token'),
@@ -131,16 +136,16 @@ void main() {
 
       final result = await repository.fetchCurrentUser();
 
-      expect(result, const Success<User, AuthFailure>(expectedUser));
+      expect(result, const Success<User, String>(expectedUser));
     });
 
-    test('com sessão persistida e 401, devolve UnauthorizedFailure', () async {
+    test('com sessão persistida e ApiException, devolve Failure com a mensagem', () async {
       when(() => local.read()).thenAnswer((_) async => persistedDto);
-      when(() => remote.getMe(token: token, tokenType: tokenType)).thenThrow(const ApiException(statusCode: 401));
+      when(() => remote.getMe(token: token, tokenType: tokenType)).thenThrow(ApiException('Token expirado'));
 
       final result = await repository.fetchCurrentUser();
 
-      expect(result, const Failure<User, AuthFailure>(UnauthorizedFailure()));
+      expect(result, const Failure<User, String>('Token expirado'));
     });
   });
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:registro_ponto_frontend/shared/app_brand_logo.dart';
 import 'package:registro_ponto_frontend/shared/app_error_banner.dart';
 import 'package:registro_ponto_frontend/shared/app_filled_button.dart';
 import 'package:registro_ponto_frontend/shared/app_text_form_field.dart';
 
 import '../view_models/login_view_model.dart';
-import 'auth_failure_messages.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -15,9 +15,8 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  late final LoginViewModel _viewModel =
-      ref.read(loginViewModelProvider.notifier);
   final _formKey = GlobalKey<FormState>();
+  late final LoginViewModel _viewModel = ref.read(loginViewModelProvider.notifier);
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +38,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        'Entrar',
-                        style: Theme.of(context).textTheme.headlineMedium,
-                        textAlign: TextAlign.center,
-                      ),
+                      const Center(child: AppBrandLogo(compact: true)),
+                      const SizedBox(height: 24),
+                      Text('Entrar', style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
                       const SizedBox(height: 24),
                       AppTextFormField(
                         key: const ValueKey('login.username'),
@@ -69,15 +66,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           onPressed: _viewModel.togglePasswordVisibility,
-                          icon: Icon(state.passwordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility),
+                          icon: Icon(state.passwordVisible ? Icons.visibility_off : Icons.visibility),
                         ),
                       ),
-                      if (failure != null) ...[
-                        const SizedBox(height: 16),
-                        AppErrorBanner(message: messageFor(failure)),
-                      ],
+                      if (failure != null) ...[const SizedBox(height: 16), AppErrorBanner(message: failure)],
                       const SizedBox(height: 24),
                       AppFilledButton(
                         key: const ValueKey('login.submit'),

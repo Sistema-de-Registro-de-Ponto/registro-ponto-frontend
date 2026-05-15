@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:registro_ponto_frontend/core/network/api_exception.dart';
 
-import '../../../../core/network/dio_exception_mapper.dart';
 import '../models/login_response_dto.dart';
 import '../models/user_dto.dart';
 import 'auth_remote_data_source.dart';
@@ -19,7 +19,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       return LoginResponseDto.fromJson(response.data!);
     } on DioException catch (e) {
-      throw mapDioException(e);
+      throw e.mapDioException();
     }
   }
 
@@ -32,7 +32,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       return UserDto.fromJson(response.data!);
     } on DioException catch (e) {
-      throw mapDioException(e);
+      throw e.mapDioException();
     }
   }
 }

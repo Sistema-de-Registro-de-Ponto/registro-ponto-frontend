@@ -1,0 +1,11 @@
+---
+description: Convenções de estilo Dart do projeto (comentários e ordem em classes).
+alwaysApply: true
+---
+
+# Estilo Dart (projeto)
+
+- **Comentários:** não adicionar comentários no código se a intenção for removê-los depois. Só comentários que devem permanecer como documentação útil de longo prazo.
+- **Ordem em classes:** declarar **campos e propriedades** (incluindo `final` de instância) **antes** do construtor; em seguida construtor, métodos e getters/setters conforme o restante do arquivo.
+- **Condicionais:** sempre que ficar legível, preferir **if inline** (operador ternário `?:`, `??`, `?.`, ou expressão única) em vez de `if`/`else` em bloco.
+- **`switch`:** quando fizer sentido, no corpo do `case` **usar a variável que está no `switch`** (ex.: `switch (result) { case Failure(): ... result.mensagem ... }`) em vez de depender só de padrões com muitos binds, se isso deixar o fluxo mais direto.
