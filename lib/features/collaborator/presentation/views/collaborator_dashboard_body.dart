@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:registro_ponto_frontend/core/extensions/datetime_extensions.dart';
+import 'package:registro_ponto_frontend/shared/app_responsive.dart';
 
 import '../../domain/entities/collaborator_profile.dart';
 
@@ -38,37 +39,30 @@ class _CollaboratorDashboardBodyState extends State<CollaboratorDashboardBody> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (_, constraints) {
-        if (constraints.maxWidth < 640) {
-          return Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _GreetingBlock(now: _now, profile: profile),
-                const SizedBox(height: 24),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: _ClockCard(now: _now),
-                ),
-              ],
-            ),
-          );
-        }
+    return AppResponsive(
+      mobile: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 24,
+          children: [
+            _GreetingBlock(now: _now, profile: profile),
 
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _GreetingBlock(now: _now, profile: profile),
-              _ClockCard(now: _now),
-            ],
-          ),
-        );
-      },
+            _ClockCard(now: _now),
+          ],
+        ),
+      ),
+      desktop: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _GreetingBlock(now: _now, profile: profile),
+            _ClockCard(now: _now),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:registro_ponto_frontend/features/collaborator/presentation/widge
 import 'package:registro_ponto_frontend/shared/app_brand_logo.dart';
 import 'package:registro_ponto_frontend/shared/app_developing.dart';
 import 'package:registro_ponto_frontend/shared/app_profile_menu.dart';
+import 'package:registro_ponto_frontend/shared/app_responsive.dart';
 
 class CollaboratorShellLoaded extends ConsumerStatefulWidget {
   final CollaboratorProfile profile;
@@ -37,32 +38,33 @@ class _CollaboratorShellLoadedState extends ConsumerState<CollaboratorShellLoade
                 border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: LayoutBuilder(
-                builder: (_, constraints) {
-                  if (constraints.maxWidth < 720) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+              child: AppResponsive(
+                mobile: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 16,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
                       children: [
-                        const Align(alignment: Alignment.centerLeft, child: AppBrandLogo(compact: true)),
-                        const SizedBox(height: 12),
-                        NavTabs(index: _tabIndex, onChanged: (i) => setState(() => _tabIndex = i)),
-                        const SizedBox(height: 12),
+                        AppBrandLogo(compact: true),
+                        const Spacer(),
                         AppProfileMenu(profile: profile),
                       ],
-                    );
-                  }
-                  return Row(
-                    children: [
-                      const AppBrandLogo(compact: true),
-                      Expanded(
-                        child: Center(
-                          child: NavTabs(index: _tabIndex, onChanged: (i) => setState(() => _tabIndex = i)),
-                        ),
+                    ),
+                    NavTabs(index: _tabIndex, onChanged: (i) => setState(() => _tabIndex = i)),
+                  ],
+                ),
+                desktop: Row(
+                  children: [
+                    const AppBrandLogo(compact: true),
+                    Expanded(
+                      child: Center(
+                        child: NavTabs(index: _tabIndex, onChanged: (i) => setState(() => _tabIndex = i)),
                       ),
-                      AppProfileMenu(profile: profile),
-                    ],
-                  );
-                },
+                    ),
+                    AppProfileMenu(profile: profile),
+                  ],
+                ),
               ),
             ),
           ),
