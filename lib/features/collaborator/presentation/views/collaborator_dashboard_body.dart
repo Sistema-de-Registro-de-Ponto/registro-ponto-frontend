@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:registro_ponto_frontend/core/extensions/datetime_extensions.dart';
+import 'package:registro_ponto_frontend/core/utils/constants.dart';
 import 'package:registro_ponto_frontend/features/activity/presentation/widgets/planned_activities_section.dart';
+import 'package:registro_ponto_frontend/features/journey/presentation/widgets/journey_section.dart';
 import 'package:registro_ponto_frontend/shared/app_responsive.dart';
 
 import '../../domain/entities/collaborator_profile.dart';
@@ -41,38 +43,55 @@ class _CollaboratorDashboardBodyState extends State<CollaboratorDashboardBody> {
 
   @override
   Widget build(BuildContext context) {
-    return AppResponsive(
-      mobile: Padding(
-        padding: const EdgeInsets.all(24),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 24,
-            children: [
-              _GreetingBlock(now: _now, profile: profile),
-              _ClockCard(now: _now),
-              const PlannedActivitiesSection(),
-            ],
-          ),
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: Constants.desktopBreakpoint,
         ),
-      ),
-      desktop: Padding(
-        padding: const EdgeInsets.all(24),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 24,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: AppResponsive(
+          mobile: Padding(
+            padding: const EdgeInsets.all(24),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 24,
                 children: [
                   _GreetingBlock(now: _now, profile: profile),
                   _ClockCard(now: _now),
+                  const JourneySection(),
+                  const PlannedActivitiesSection(),
                 ],
               ),
-              const PlannedActivitiesSection(),
-            ],
+            ),
+          ),
+          desktop: Padding(
+            padding: const EdgeInsets.all(24),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 24,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Center(
+                        child: _GreetingBlock(now: _now, profile: profile),
+                      ),
+                      Center(child: _ClockCard(now: _now)),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 16,
+                    children: [
+                      Flexible(child: const JourneySection()),
+                      Flexible(child: const PlannedActivitiesSection()),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -127,7 +146,7 @@ class _ClockCard extends StatelessWidget {
         side: BorderSide(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,

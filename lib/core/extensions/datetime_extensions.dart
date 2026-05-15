@@ -24,4 +24,22 @@ extension DateTimeExtensions on DateTime {
     final local = isUtc ? toLocal() : this;
     return DateFormat('HH:mm').format(local);
   }
+
+  Duration elapsedSince(DateTime from) {
+    final start = from.isUtc ? from.toLocal() : from;
+    final end = isUtc ? toLocal() : this;
+    return end.difference(start);
+  }
+}
+
+extension DurationExtensions on Duration {
+  String get formattedHms {
+    final hours = inHours;
+    final minutes = inMinutes.remainder(60);
+    final seconds = inSeconds.remainder(60);
+    final h = hours.toString().padLeft(2, '0');
+    final m = minutes.toString().padLeft(2, '0');
+    final s = seconds.toString().padLeft(2, '0');
+    return '$h:$m:$s';
+  }
 }

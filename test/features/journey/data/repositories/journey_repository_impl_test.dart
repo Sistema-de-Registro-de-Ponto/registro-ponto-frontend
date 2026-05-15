@@ -1,0 +1,110 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:registro_ponto_frontend/core/network/api_exception.dart';
+import 'package:registro_ponto_frontend/core/utils/result.dart';
+import 'package:registro_ponto_frontend/features/journey/data/datasources/journey_remote_data_source.dart';
+import 'package:registro_ponto_frontend/features/journey/data/models/journey_dto.dart';
+import 'package:registro_ponto_frontend/features/journey/data/models/journey_planned_activity_dto.dart';
+import 'package:registro_ponto_frontend/features/journey/data/repositories/journey_repository_impl.dart';
+import 'package:registro_ponto_frontend/features/journey/domain/entities/journey.dart';
+import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_planned_activity.dart';
+import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_status.dart';
+
+class _MockRemote extends Mock implements JourneyRemoteDataSource {}
+
+void main() {
+  late _MockRemote remote;
+  late JourneyRepositoryImpl repository;
+
+  final startedAt = DateTime.parse('2026-05-15T08:03:00-03:00').toLocal();
+  final createdAt = DateTime.parse('2026-05-15T08:03:01-03:00').toLocal();
+  final updatedAt = DateTime.parse('2026-05-15T08:03:01-03:00').toLocal();
+
+  late JourneyDto dto;
+  late Journey journey;
+
+  setUp(() {
+    remote = _MockRemote();
+    repository = JourneyRepositoryImpl(remote: remote);
+    dto = JourneyDto(
+      id: 10,
+      collaboratorId: 4,
+      startedAt: startedAt,
+      plannedActivities: const [
+        JourneyPlannedActivityDto(
+          id: 1,
+          plannedActivityId: 7,
+          description: 'Ajustar API de login',
+          checked: true,
+        ),
+      ],
+      status: JourneyStatus.inProgress,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+    journey = Journey(
+      id: 10,
+      collaboratorId: 4,
+      startedAt: startedAt,
+      plannedActivities: const [
+        JourneyPlannedActivity(
+          id: 1,
+          plannedActivityId: 7,
+          description: 'Ajustar API de login',
+          checked: true,
+        ),
+      ],
+      status: JourneyStatus.inProgress,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  });
+
+  group('fetchInProgressJourney', () {
+    test('em sucesso com jornada devolve Success com a entidade', () async {
+      when(() => remote.fetchInProgressJourney()).thenAnswer((_) async => dto);
+
+      final result = await repository.fetchInProgressJourney();
+
+      expect(result, Success<Journey?, String>(journey));
+    });
+
+    test('em sucesso sem jornada devolve Success com null', () async {
+      when(() => remote.fetchInProgressJourney()).thenAnswer((_) async => null);
+
+      final result = await repository.fetchInProgressJourney();
+
+      expect(result, const Success<Journey?, String>(null));
+    });
+
+    test('em ApiException devolve Failure com a mensagem', () async {
+      when(() => remote.fetchInProgressJourney())
+          .thenThrow(ApiException('Erro ao buscar jornada'));
+
+      final result = await repository.fetchInProgressJourney();
+
+      expect(
+        result,
+        const Failure<Journey?, String>('Erro ao buscar jornada'),
+      );
+    });
+  });
+
+  group('startJourney', () {
+    test('em sucesso devolve Success com a entidade da jornada', () async {
+      when(() => remote.startJourney()).thenAnswer((_) async => dto);
+
+      final result = await repository.startJourney();
+
+      expect(result, Success<Journey, String>(journey));
+    });
+
+    test('em ApiException devolve Failure com a mensagem', () async {
+      when(() => remote.startJourney()).thenThrow(ApiException('Jornada já em andamento'));
+
+      final result = await repository.startJourney();
+
+      expect(result, const Failure<Journey, String>('Jornada já em andamento'));
+    });
+  });
+}

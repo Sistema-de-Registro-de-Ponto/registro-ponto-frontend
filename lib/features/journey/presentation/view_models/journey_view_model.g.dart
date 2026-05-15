@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'activity_view_model.dart';
+part of 'journey_view_model.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,51 +9,51 @@ part of 'activity_view_model.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(ActivityViewModel)
-final activityViewModelProvider = ActivityViewModelProvider._();
+@ProviderFor(JourneyViewModel)
+final journeyViewModelProvider = JourneyViewModelProvider._();
 
-final class ActivityViewModelProvider
-    extends $NotifierProvider<ActivityViewModel, ActivityState> {
-  ActivityViewModelProvider._()
+final class JourneyViewModelProvider
+    extends $NotifierProvider<JourneyViewModel, JourneyState> {
+  JourneyViewModelProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'activityViewModelProvider',
+        name: r'journeyViewModelProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$activityViewModelHash();
+  String debugGetCreateSourceHash() => _$journeyViewModelHash();
 
   @$internal
   @override
-  ActivityViewModel create() => ActivityViewModel();
+  JourneyViewModel create() => JourneyViewModel();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ActivityState value) {
+  Override overrideWithValue(JourneyState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ActivityState>(value),
+      providerOverride: $SyncValueProvider<JourneyState>(value),
     );
   }
 }
 
-String _$activityViewModelHash() => r'292b0d57a0680e58cdf1d8968a4b5d586778a7d2';
+String _$journeyViewModelHash() => r'3aaa060de78cfedbd0eb94cbb29b650e274562d0';
 
-abstract class _$ActivityViewModel extends $Notifier<ActivityState> {
-  ActivityState build();
+abstract class _$JourneyViewModel extends $Notifier<JourneyState> {
+  JourneyState build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<ActivityState, ActivityState>;
+    final ref = this.ref as $Ref<JourneyState, JourneyState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<ActivityState, ActivityState>,
-              ActivityState,
+              AnyNotifier<JourneyState, JourneyState>,
+              JourneyState,
               Object?,
               Object?
             >;

@@ -6,7 +6,14 @@ alwaysApply: true
 # Estilo Dart (projeto)
 
 - **Comentários:** não adicionar comentários no código se a intenção for removê-los depois. Só comentários que devem permanecer como documentação útil de longo prazo.
-- **Ordem em classes:** declarar **campos e propriedades** (incluindo `final` de instância) **antes** do construtor; em seguida construtor, métodos e getters/setters conforme o restante do arquivo.
+- **Ordem em classes:** declarar **constantes** (`static const`, etc.) **no topo da classe**, **antes** dos campos e propriedades de instância; em seguida campos/propriedades, construtor e métodos/getters/setters.
+- **Ordem dos métodos e getters/setters:**
+  1. `@override` getters/setters
+  2. `@override` methods
+  3. getters/setters públicos
+  4. methods públicos
+  5. getters/setters privados
+  6. methods privados
 - **Condicionais:** sempre que ficar legível, preferir **if inline** (operador ternário `?:`, `??`, `?.`, ou expressão única) em vez de `if`/`else` em bloco.
 - **`switch`:** quando fizer sentido, no corpo do `case` **usar a variável que está no `switch`** (ex.: `switch (result) { case Failure(): ... result.mensagem ... }`) em vez de depender só de padrões com muitos binds, se isso deixar o fluxo mais direto.
 - **Idioma:** **código** (nomes de pastas, ficheiros, classes, métodos, variáveis, parâmetros, comentários no código) em **inglês**. **Português** em **textos de UI** (labels, mensagens ao utilizador, `Text('...')`, erros apresentados ao utilizador), nas **descrições dos testes** (`test('...')`, `testWidgets('...')`) e, se quiserem, documentação em prosa fora do código.

@@ -8,6 +8,8 @@ class AppFilledButton extends StatelessWidget {
   final bool isLoading;
   final bool isEnabled;
   final IconData? icon;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   const AppFilledButton({
     super.key,
@@ -16,12 +18,19 @@ class AppFilledButton extends StatelessWidget {
     this.isLoading = false,
     this.isEnabled = true,
     this.icon,
+    this.backgroundColor,
+    this.foregroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return FilledButton(
       onPressed: _onPressed,
+      style: FilledButton.styleFrom(
+        backgroundColor: backgroundColor,
+        foregroundColor: foregroundColor,
+        minimumSize: Size(100, 48),
+      ),
       child: isLoading ? const AppLoading() : _child,
     );
   }
