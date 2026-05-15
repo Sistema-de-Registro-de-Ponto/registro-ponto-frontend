@@ -1,3 +1,4 @@
+import 'package:registro_ponto_frontend/core/extensions/object_extensions.dart';
 import 'package:registro_ponto_frontend/core/network/api_exception.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/collaborator/domain/entities/collaborator_profile.dart';
@@ -8,7 +9,8 @@ import '../datasources/collaborator_remote_data_source.dart';
 class CollaboratorRepositoryImpl implements CollaboratorRepository {
   final CollaboratorRemoteDataSource _remote;
 
-  CollaboratorRepositoryImpl({required CollaboratorRemoteDataSource remote}) : _remote = remote;
+  CollaboratorRepositoryImpl({required CollaboratorRemoteDataSource remote})
+    : _remote = remote;
 
   @override
   Future<Result<CollaboratorProfile, String>> fetchProfile() async {
@@ -18,7 +20,7 @@ class CollaboratorRepositoryImpl implements CollaboratorRepository {
     } on ApiException catch (e) {
       return Failure(e.message);
     } catch (e) {
-      return Failure(e.toString());
+      return Failure(e.toErrorString());
     }
   }
 }

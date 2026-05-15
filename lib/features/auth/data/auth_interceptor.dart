@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../presentation/view_models/auth_session_controller.dart';
 
 class AuthInterceptor extends Interceptor {
-  static const _loginPath = '/auth/login';
+  static const _loginPath = '/v1/auth/login';
 
   final Ref _ref;
 

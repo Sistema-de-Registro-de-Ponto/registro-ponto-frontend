@@ -7,23 +7,23 @@ void main() {
   final createdAt = DateTime.parse('2026-05-15T08:03:01-03:00').toLocal();
   final updatedAt = DateTime.parse('2026-05-15T08:03:01-03:00').toLocal();
 
-  test('fromJson mapeia jornada e planned_activities', () {
+  test('fromJson mapeia jornada e journey_planned_activities', () {
     final dto = JourneyDto.fromJson({
       'id': 10,
       'collaborator_id': 4,
       'started_at': '2026-05-15T08:03:00-03:00',
-      'planned_activities': [
+      'journey_planned_activities': [
         {
           'id': 1,
           'planned_activity_id': 7,
           'description': 'Ajustar API de login',
-          'checked': true,
+          'is_checked': true,
         },
         {
           'id': 2,
           'planned_activity_id': 8,
           'description': 'Reunião daily',
-          'checked': false,
+          'is_checked': false,
         },
       ],
       'status': 'in_progress',

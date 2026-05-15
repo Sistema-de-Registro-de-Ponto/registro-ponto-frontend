@@ -4,7 +4,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/auth/data/repositories/auth_repository_provider.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/auth_session.dart';
-import 'package:registro_ponto_frontend/features/auth/domain/entities/user.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/repositories/auth_repository.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/view_models/login_state.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/view_models/login_view_model.dart';
@@ -17,14 +16,9 @@ void main() {
 
   const username = 'colaborador';
   const password = '12345678';
-  const session = AuthSession(
-    token: 't',
-    tokenType: 'Bearer',
-    user: User(username: username, roles: ['ROLE_COLLABORATOR']),
-  );
+  const session = AuthSession(token: 't', tokenType: 'Bearer');
 
-  LoginViewModel notifier() =>
-      container.read(loginViewModelProvider.notifier);
+  LoginViewModel notifier() => container.read(loginViewModelProvider.notifier);
   LoginState readState() => container.read(loginViewModelProvider);
 
   setUp(() {
@@ -57,20 +51,24 @@ void main() {
     expect(readState().passwordVisible, isFalse);
   });
 
-  test('submit em sucesso transita isLoading=true -> isLoading=false sem failure', () async {
-    when(() => repo.login(username: username, password: password))
-        .thenAnswer((_) async => const Success<AuthSession, String>(session));
+  test(
+    'submit em sucesso transita isLoading=true -> isLoading=false sem failure',
+    () async {
+      when(
+        () => repo.login(username: username, password: password),
+      ).thenAnswer((_) async => const Success<AuthSession, String>(session));
 
-    notifier().setUsername(username);
-    notifier().setPassword(password);
+      notifier().setUsername(username);
+      notifier().setPassword(password);
 
-    final future = notifier().submit();
-    expect(readState().isLoading, isTrue);
+      final future = notifier().submit();
+      expect(readState().isLoading, isTrue);
 
-    await future;
-    expect(readState().isLoading, isFalse);
-    expect(readState().failure, isNull);
-  });
+      await future;
+      expect(readState().isLoading, isFalse);
+      expect(readState().failure, isNull);
+    },
+  );
 
   test('submit com Failure preenche failure no state com a string', () async {
     when(() => repo.login(username: username, password: password)).thenAnswer(
@@ -96,8 +94,9 @@ void main() {
     await notifier().submit();
     expect(readState().failure, 'Credenciais inválidas');
 
-    when(() => repo.login(username: username, password: password))
-        .thenAnswer((_) async => const Success<AuthSession, String>(session));
+    when(
+      () => repo.login(username: username, password: password),
+    ).thenAnswer((_) async => const Success<AuthSession, String>(session));
     final future = notifier().submit();
     expect(readState().failure, isNull);
 

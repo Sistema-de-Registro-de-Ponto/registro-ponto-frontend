@@ -101,7 +101,7 @@ void main() {
 
       when(
         () => remote.updatePlannedActivityChecked(
-          journeyPlannedActivityId: 1,
+          id: 1,
           checked: false,
         ),
       ).thenAnswer((_) async => updatedDto);
@@ -127,7 +127,7 @@ void main() {
     test('em ApiException devolve Failure com a mensagem', () async {
       when(
         () => remote.updatePlannedActivityChecked(
-          journeyPlannedActivityId: 99,
+          id: 99,
           checked: true,
         ),
       ).thenThrow(ApiException('Atividade não encontrada'));

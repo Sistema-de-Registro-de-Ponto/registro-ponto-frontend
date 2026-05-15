@@ -1,3 +1,4 @@
+import 'package:registro_ponto_frontend/core/extensions/object_extensions.dart';
 import 'package:registro_ponto_frontend/core/network/api_exception.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey.dart';
@@ -9,7 +10,8 @@ import '../datasources/journey_remote_data_source.dart';
 class JourneyRepositoryImpl implements JourneyRepository {
   final JourneyRemoteDataSource _remote;
 
-  JourneyRepositoryImpl({required JourneyRemoteDataSource remote}) : _remote = remote;
+  JourneyRepositoryImpl({required JourneyRemoteDataSource remote})
+    : _remote = remote;
 
   @override
   Future<Result<Journey?, String>> fetchInProgressJourney() async {
@@ -19,7 +21,7 @@ class JourneyRepositoryImpl implements JourneyRepository {
     } on ApiException catch (e) {
       return Failure(e.message);
     } catch (e) {
-      return Failure(e.toString());
+      return Failure(e.toErrorString());
     }
   }
 
@@ -31,7 +33,7 @@ class JourneyRepositoryImpl implements JourneyRepository {
     } on ApiException catch (e) {
       return Failure(e.message);
     } catch (e) {
-      return Failure(e.toString());
+      return Failure(e.toErrorString());
     }
   }
 
@@ -42,14 +44,14 @@ class JourneyRepositoryImpl implements JourneyRepository {
   }) async {
     try {
       final dto = await _remote.updatePlannedActivityChecked(
-        journeyPlannedActivityId: journeyPlannedActivityId,
+        id: journeyPlannedActivityId,
         checked: checked,
       );
       return Success(dto.toEntity());
     } on ApiException catch (e) {
       return Failure(e.message);
     } catch (e) {
-      return Failure(e.toString());
+      return Failure(e.toErrorString());
     }
   }
 }

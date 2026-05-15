@@ -8,7 +8,6 @@ import 'package:registro_ponto_frontend/features/journey/domain/entities/journey
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_planned_activity.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_status.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/repositories/journey_repository.dart';
-import 'package:registro_ponto_frontend/features/journey/presentation/view_models/journey_view_model.dart';
 import 'package:registro_ponto_frontend/features/journey/presentation/widgets/journey_section.dart';
 
 class _MockJourneyRepository extends Mock implements JourneyRepository {}

@@ -12,7 +12,7 @@ class CollaboratorRemoteDataSourceImpl implements CollaboratorRemoteDataSource {
   @override
   Future<CollaboratorProfileDto> fetchProfile() async {
     try {
-      final response = await _dio.get<Map<String, dynamic>>('/v1/colaborator');
+      final response = await _dio.get<Map<String, dynamic>>('/v1/collaborator');
       return CollaboratorProfileDto.fromJson(response.data!);
     } on DioException catch (e) {
       throw e.mapDioException();

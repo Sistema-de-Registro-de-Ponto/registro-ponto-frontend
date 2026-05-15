@@ -23,7 +23,7 @@ class JourneyDto {
   });
 
   factory JourneyDto.fromJson(Map<String, dynamic> json) {
-    final activitiesJson = json['planned_activities'];
+    final activitiesJson = json['journey_planned_activities'];
     final activities = activitiesJson is List<dynamic>
         ? activitiesJson
               .whereType<Map<String, dynamic>>()

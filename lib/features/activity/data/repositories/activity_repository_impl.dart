@@ -1,3 +1,4 @@
+import 'package:registro_ponto_frontend/core/extensions/object_extensions.dart';
 import 'package:registro_ponto_frontend/core/network/api_exception.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/activity/domain/entities/planned_activity.dart';
@@ -8,7 +9,8 @@ import '../datasources/activity_remote_data_source.dart';
 class ActivityRepositoryImpl implements ActivityRepository {
   final ActivityRemoteDataSource _remote;
 
-  ActivityRepositoryImpl({required ActivityRemoteDataSource remote}) : _remote = remote;
+  ActivityRepositoryImpl({required ActivityRemoteDataSource remote})
+    : _remote = remote;
 
   @override
   Future<Result<List<PlannedActivity>, String>> fetchPlannedActivities() async {
@@ -18,31 +20,35 @@ class ActivityRepositoryImpl implements ActivityRepository {
     } on ApiException catch (e) {
       return Failure(e.message);
     } catch (e) {
-      return Failure(e.toString());
+      return Failure(e.toErrorString());
     }
   }
 
   @override
-  Future<Result<PlannedActivity, String>> createPlannedActivity({required String description}) async {
+  Future<Result<PlannedActivity, String>> createPlannedActivity({
+    required String description,
+  }) async {
     try {
       final dto = await _remote.createPlannedActivity(description: description);
       return Success(dto.toEntity());
     } on ApiException catch (e) {
       return Failure(e.message);
     } catch (e) {
-      return Failure(e.toString());
+      return Failure(e.toErrorString());
     }
   }
 
   @override
-  Future<Result<PlannedActivity, String>> deletePlannedActivity({required int id}) async {
+  Future<Result<PlannedActivity, String>> deletePlannedActivity({
+    required int id,
+  }) async {
     try {
       final dto = await _remote.deletePlannedActivity(id: id);
       return Success(dto.toEntity());
     } on ApiException catch (e) {
       return Failure(e.message);
     } catch (e) {
-      return Failure(e.toString());
+      return Failure(e.toErrorString());
     }
   }
 }

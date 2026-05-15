@@ -18,7 +18,7 @@ class JourneyPlannedActivityDto {
       id: json['id'] as int,
       plannedActivityId: json['planned_activity_id'] as int,
       description: json['description'] as String,
-      checked: json['checked'] as bool,
+      checked: json['is_checked'] as bool,
     );
   }
 

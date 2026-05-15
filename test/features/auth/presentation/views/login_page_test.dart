@@ -6,7 +6,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/auth/data/repositories/auth_repository_provider.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/auth_session.dart';
-import 'package:registro_ponto_frontend/features/auth/domain/entities/user.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/repositories/auth_repository.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/views/login_page.dart';
 
@@ -27,9 +26,9 @@ Widget _harness(AuthRepository repo) {
 }
 
 Finder _input(String keyValue) => find.descendant(
-      of: find.byKey(ValueKey(keyValue)),
-      matching: find.byType(TextFormField),
-    );
+  of: find.byKey(ValueKey(keyValue)),
+  matching: find.byType(TextFormField),
+);
 
 void main() {
   late _MockAuthRepository repo;
@@ -38,7 +37,9 @@ void main() {
     repo = _MockAuthRepository();
   });
 
-  testWidgets('exibe erro de validação ao submeter campos vazios', (tester) async {
+  testWidgets('exibe erro de validação ao submeter campos vazios', (
+    tester,
+  ) async {
     await tester.pumpWidget(_harness(repo));
 
     await tester.tap(find.byKey(const ValueKey('login.submit')));
@@ -46,19 +47,22 @@ void main() {
 
     expect(find.text('Informe o usuário'), findsOneWidget);
     expect(find.text('Informe a senha'), findsOneWidget);
-    verifyNever(() => repo.login(
-          username: any(named: 'username'),
-          password: any(named: 'password'),
-        ));
+    verifyNever(
+      () => repo.login(
+        username: any(named: 'username'),
+        password: any(named: 'password'),
+      ),
+    );
   });
 
   testWidgets('submete credenciais ao tocar em Entrar', (tester) async {
-    when(() => repo.login(username: 'colaborador', password: '12345678'))
-        .thenAnswer((_) async => const Success<AuthSession, String>(AuthSession(
-              token: 't',
-              tokenType: 'Bearer',
-              user: User(username: 'colaborador', roles: []),
-            )));
+    when(
+      () => repo.login(username: 'colaborador', password: '12345678'),
+    ).thenAnswer(
+      (_) async => const Success<AuthSession, String>(
+        AuthSession(token: 't', tokenType: 'Bearer'),
+      ),
+    );
 
     await tester.pumpWidget(_harness(repo));
 
@@ -67,13 +71,20 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('login.submit')));
     await tester.pump();
 
-    verify(() => repo.login(username: 'colaborador', password: '12345678'))
-        .called(1);
+    verify(
+      () => repo.login(username: 'colaborador', password: '12345678'),
+    ).called(1);
   });
 
-  testWidgets('mostra mensagem amigável quando login falha com 401', (tester) async {
-    when(() => repo.login(username: 'colaborador', password: 'wrong'))
-        .thenAnswer((_) async => const Failure<AuthSession, String>('Usuário ou senha inválidos.'));
+  testWidgets('mostra mensagem amigável quando login falha com 401', (
+    tester,
+  ) async {
+    when(
+      () => repo.login(username: 'colaborador', password: 'wrong'),
+    ).thenAnswer(
+      (_) async =>
+          const Failure<AuthSession, String>('Usuário ou senha inválidos.'),
+    );
 
     await tester.pumpWidget(_harness(repo));
 
@@ -85,16 +96,19 @@ void main() {
     expect(find.text('Usuário ou senha inválidos.'), findsOneWidget);
   });
 
-  testWidgets('desabilita o botão e troca por spinner enquanto carrega', (tester) async {
-    when(() => repo.login(username: 'colaborador', password: '12345678'))
-        .thenAnswer((_) => Future.delayed(
-              const Duration(milliseconds: 200),
-              () => const Success<AuthSession, String>(AuthSession(
-                token: 't',
-                tokenType: 'Bearer',
-                user: User(username: 'colaborador', roles: []),
-              )),
-            ));
+  testWidgets('desabilita o botão e troca por spinner enquanto carrega', (
+    tester,
+  ) async {
+    when(
+      () => repo.login(username: 'colaborador', password: '12345678'),
+    ).thenAnswer(
+      (_) => Future.delayed(
+        const Duration(milliseconds: 200),
+        () => const Success<AuthSession, String>(
+          AuthSession(token: 't', tokenType: 'Bearer'),
+        ),
+      ),
+    );
 
     await tester.pumpWidget(_harness(repo));
 

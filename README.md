@@ -1,6 +1,6 @@
 # registro-ponto-frontend
 
-Frontend Flutter Web do sistema de registro de ponto da Player Contabilidade. Inclui **login** (autenticação na API, sessão no `SecureStorage`, auto-logout em `401`) e **área do colaborador** em `/` (shell com dashboard, histórico e perfil — ver `docs/area-colaborador.md`).
+Frontend Flutter Web do sistema de registro de ponto da Player Contabilidade. Inclui **login** (autenticação na API, sessão no `SecureStorage`, auto-logout em `401`) e **área do colaborador** em `/` (shell com dashboard, histórico e perfil — resumo na secção **Área do colaborador e contratos úteis** abaixo).
 
 ### Requisitos
 
@@ -50,11 +50,15 @@ flutter test
 flutter analyze
 ```
 
-**Logging de rede:** em `kDebugMode` (qualquer `flutter run`) o `PrettyDioLogger` imprime cada request/response do Dio no terminal — útil para inspecionar payloads do `/auth/login`, `/auth/me` e `/v1/colaborator`. Em build de release, o logger não é registrado.
+**Logging de rede:** em `kDebugMode` (qualquer `flutter run`) o `PrettyDioLogger` imprime cada request/response do Dio no terminal — útil para inspecionar payloads do `POST /v1/auth/login` e do `GET /v1/collaborator`. Em build de release, o logger não é registrado.
 
-### Documentação adicional
+### Área do colaborador e contratos úteis
 
-- **`docs/area-colaborador.md`** — rotas da home, contrato do `GET /v1/colaborator`, Riverpod (`collaboratorProfileViewModelProvider`), shell e comportamento de erro/retry.
+- **GoRouter:** `/` exige sessão (`CollaboratorShellPage`); `/login` é pública (com sessão ativa → redirect para `/`). Ver `lib/app/router.dart`.
+- **Perfil:** `GET /v1/collaborator` com header `Authorization`. JSON esperado: `{ "user_id": <int>, "first_name": "<string>" }`. `CollaboratorRepository.fetchProfile()` devolve `Result<CollaboratorProfile, String>`.
+- **Estado / UI:** `collaboratorProfileViewModelProvider` carrega o perfil no `build()`; shell usa `AppLoading` / `AppError` (retry com `ref.invalidate(collaboratorProfileViewModelProvider)`) / `CollaboratorShellLoaded` — abas Dashboard, Histórico e Perfil (`IndexedStack`; dashboard em `CollaboratorDashboardBody`; resto `AppDeveloping` por agora), **Sair** no `AppProfileMenu` via `AuthSessionController`. Em falha na API, o view model pode expor placeholder (`userId: 0`, `firstName: 'Desconhecido'`). Código em `lib/features/collaborator/`.
+- **Locale:** datas e UI em `pt_BR` (`main.dart`, `lib/app/app.dart`).
+- **Jornada (API):** `PUT /v1/journeys/activities/planned/{id}` com corpo `{ "is_checked": <bool> }`; respostas de jornada usam `journey_planned_activities` e, em cada item, `is_checked`.
 
 ### Credenciais de teste
 
@@ -87,11 +91,11 @@ A senha deve obedecer ao padrão `^\d{8}$` (exatamente 8 dígitos numéricos). A
    - Sessão `null` + rota ≠ `/login` → redireciona para `/login`.
    - Sessão presente + rota `/login` → redireciona para `/` (home do colaborador).
    - `refreshListenable` ouve o `authSessionControllerProvider`; login, logout ou `401` recalculam o redirect.
-3. **Login** (`POST /auth/login` → `GET /auth/me`):
+3. **Login** (`POST /v1/auth/login`):
    - Form com `username` + `password` (toggle de visibilidade) e logo da marca no card.
-   - Em sucesso: token e usuário persistidos no `SecureStorage`; `AuthSessionController` atualizado → redirect para `/`.
+   - Em sucesso: a resposta inclui `token`, `tokenType`, `username` e `roles`; o repositório monta a sessão, persiste no `SecureStorage` e atualiza o `AuthSessionController` → redirect para `/`.
    - Em falha: o repositório devolve `Result` com `Failure<String>`; o estado de login guarda a mensagem e o banner (`AppErrorBanner`) exibe o texto retornado (incluindo detalhes mapeados de `errors` / `detail` quando a API responde nesse formato).
-4. **Home colaborador (`/`)** — após autenticar, `CollaboratorShellPage` dispara o carregamento do perfil (`GET /v1/colaborator`). Detalhes de abas, menu **Sair** e dashboard estão em `docs/area-colaborador.md`.
-5. **Header `Authorization` automático** — o `AuthInterceptor` injeta `Authorization: <tokenType> <token>` em requests autenticados (exceto `/auth/login`). Novos data sources podem reutilizar o mesmo `Dio` configurado em `dio_client_provider.dart`.
-6. **Auto-logout em 401** — respostas `401` fora de `/auth/login` disparam `authSessionController.clear()`; o router volta para `/login`.
+4. **Home colaborador (`/`)** — após autenticar, `CollaboratorShellPage` dispara o carregamento do perfil (`GET /v1/collaborator`); ver a secção **Área do colaborador e contratos úteis** neste README.
+5. **Header `Authorization` automático** — o `AuthInterceptor` injeta `Authorization: <tokenType> <token>` em requests autenticados (exceto `POST /v1/auth/login`). Novos data sources podem reutilizar o mesmo `Dio` configurado em `dio_client_provider.dart`.
+6. **Auto-logout em 401** — respostas `401` fora de `POST /v1/auth/login` disparam `authSessionController.clear()`; o router volta para `/login`.
 7. **Logout manual** — no shell do colaborador, o menu de perfil (`AppProfileMenu`) oferece **Sair**, chamando o mesmo fluxo de `clear()` (limpa storage + sessão) e redirect para `/login`.

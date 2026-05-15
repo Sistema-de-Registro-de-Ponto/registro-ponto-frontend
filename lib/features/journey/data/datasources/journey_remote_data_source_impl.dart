@@ -43,13 +43,13 @@ class JourneyRemoteDataSourceImpl implements JourneyRemoteDataSource {
 
   @override
   Future<JourneyPlannedActivityDto> updatePlannedActivityChecked({
-    required int journeyPlannedActivityId,
+    required int id,
     required bool checked,
   }) async {
     try {
-      final response = await _dio.post<Map<String, dynamic>>(
-        '$_journeysPath/activities/planned/$journeyPlannedActivityId',
-        data: <String, dynamic>{'checked': checked},
+      final response = await _dio.put<Map<String, dynamic>>(
+        '$_journeysPath/activities/planned/$id',
+        data: <String, dynamic>{'is_checked': checked},
       );
       final data = response.data;
       if (data == null) throw ApiException();
