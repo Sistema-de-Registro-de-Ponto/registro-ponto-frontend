@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:registro_ponto_frontend/shared/app_loading.dart';
 
 class AppCheckListItem extends StatelessWidget {
   static const _completedGreen = Color(0xFF16A34A);
@@ -6,22 +7,26 @@ class AppCheckListItem extends StatelessWidget {
 
   final bool isChecked;
   final String title;
+  final VoidCallback? onTap;
+  final bool isBusy;
 
   const AppCheckListItem({
     super.key,
     required this.isChecked,
     required this.title,
+    this.onTap,
+    this.isBusy = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+    final row = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
       child: Row(
         children: [
-          _CheckIcon(isChecked: isChecked),
+          _CheckIcon(isChecked: isChecked, showBusy: isBusy),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -39,17 +44,36 @@ class AppCheckListItem extends StatelessWidget {
         ],
       ),
     );
+
+    if (onTap == null) return Opacity(opacity: isBusy ? 0.55 : 1, child: row);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isBusy ? null : onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Opacity(opacity: isBusy ? 0.55 : 1, child: row),
+      ),
+    );
   }
 }
 
 class _CheckIcon extends StatelessWidget {
   final bool isChecked;
+  final bool showBusy;
 
-  const _CheckIcon({required this.isChecked});
+  const _CheckIcon({required this.isChecked, this.showBusy = false});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    if (showBusy) {
+      return SizedBox.square(
+        dimension: 22,
+        child: Center(child: AppLoading(dimension: 18)),
+      );
+    }
 
     if (isChecked) {
       return Container(

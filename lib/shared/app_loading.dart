@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
 
 class AppLoading extends StatelessWidget {
-  const AppLoading({super.key});
+  final double? dimension;
+  final double strokeWidth;
+  final Color? color;
+
+  const AppLoading({
+    super.key,
+    this.dimension,
+    this.strokeWidth = 4,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2));
+    final theme = Theme.of(context);
+
+    return SizedBox.square(
+      dimension: dimension,
+      child: CircularProgressIndicator(
+        strokeWidth: strokeWidth,
+        color: color ?? theme.colorScheme.primary,
+      ),
+    );
   }
 }

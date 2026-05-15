@@ -31,7 +31,7 @@ class AppFilledButton extends StatelessWidget {
         foregroundColor: foregroundColor,
         minimumSize: Size(100, 48),
       ),
-      child: isLoading ? const AppLoading() : _child,
+      child: isLoading ? const AppLoading(dimension: 24) : _child,
     );
   }
 

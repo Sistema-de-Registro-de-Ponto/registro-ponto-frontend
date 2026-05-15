@@ -90,6 +90,60 @@ void main() {
     });
   });
 
+  group('updatePlannedActivityChecked', () {
+    test('em sucesso devolve Success com a entidade atualizada', () async {
+      final updatedDto = JourneyPlannedActivityDto(
+        id: 1,
+        plannedActivityId: 7,
+        description: 'Ajustar API de login',
+        checked: false,
+      );
+
+      when(
+        () => remote.updatePlannedActivityChecked(
+          journeyPlannedActivityId: 1,
+          checked: false,
+        ),
+      ).thenAnswer((_) async => updatedDto);
+
+      final result = await repository.updatePlannedActivityChecked(
+        journeyPlannedActivityId: 1,
+        checked: false,
+      );
+
+      expect(
+        result,
+        Success<JourneyPlannedActivity, String>(
+          JourneyPlannedActivity(
+            id: 1,
+            plannedActivityId: 7,
+            description: 'Ajustar API de login',
+            checked: false,
+          ),
+        ),
+      );
+    });
+
+    test('em ApiException devolve Failure com a mensagem', () async {
+      when(
+        () => remote.updatePlannedActivityChecked(
+          journeyPlannedActivityId: 99,
+          checked: true,
+        ),
+      ).thenThrow(ApiException('Atividade não encontrada'));
+
+      final result = await repository.updatePlannedActivityChecked(
+        journeyPlannedActivityId: 99,
+        checked: true,
+      );
+
+      expect(
+        result,
+        const Failure<JourneyPlannedActivity, String>('Atividade não encontrada'),
+      );
+    });
+  });
+
   group('startJourney', () {
     test('em sucesso devolve Success com a entidade da jornada', () async {
       when(() => remote.startJourney()).thenAnswer((_) async => dto);

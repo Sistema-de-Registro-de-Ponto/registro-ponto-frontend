@@ -163,4 +163,60 @@ void main() {
     expect(readState().journey, newJourney);
     verify(() => repo.startJourney()).called(1);
   });
+
+  test('setChecked em sucesso atualiza atividade na jornada sem novo GET', () async {
+    when(() => repo.fetchInProgressJourney())
+        .thenAnswer((_) async => Success<Journey?, String>(journeyInProgress));
+
+    final updatedActivity = JourneyPlannedActivity(
+      id: 1,
+      plannedActivityId: 7,
+      description: 'Ajustar API de login',
+      checked: false,
+    );
+
+    when(
+      () => repo.updatePlannedActivityChecked(
+        journeyPlannedActivityId: 1,
+        checked: false,
+      ),
+    ).thenAnswer((_) async => Success<JourneyPlannedActivity, String>(updatedActivity));
+
+    await waitForInitialLoad();
+
+    await notifier().setChecked(1, false);
+
+    expect(readState().togglingPlannedActivityId, isNull);
+    expect(readState().failure, isNull);
+    expect(readState().journey?.plannedActivities.single.checked, isFalse);
+    verify(
+      () => repo.updatePlannedActivityChecked(
+        journeyPlannedActivityId: 1,
+        checked: false,
+      ),
+    ).called(1);
+  });
+
+  test('setChecked em Failure preenche failure', () async {
+    when(() => repo.fetchInProgressJourney())
+        .thenAnswer((_) async => Success<Journey?, String>(journeyInProgress));
+
+    when(
+      () => repo.updatePlannedActivityChecked(
+        journeyPlannedActivityId: 1,
+        checked: false,
+      ),
+    ).thenAnswer(
+      (_) async =>
+          const Failure<JourneyPlannedActivity, String>('Não foi possível atualizar'),
+    );
+
+    await waitForInitialLoad();
+
+    await notifier().setChecked(1, false);
+
+    expect(readState().togglingPlannedActivityId, isNull);
+    expect(readState().failure, 'Não foi possível atualizar');
+    expect(readState().journey?.plannedActivities.single.checked, isTrue);
+  });
 }

@@ -25,6 +25,20 @@ class Journey extends Equatable {
 
   String get startedHourLabel => startedAt.formattedHourShort;
 
+  Journey withUpdatedPlannedActivity(JourneyPlannedActivity updated) {
+    return Journey(
+      id: id,
+      collaboratorId: collaboratorId,
+      startedAt: startedAt,
+      plannedActivities: plannedActivities
+          .map((item) => item.id == updated.id ? updated : item)
+          .toList(),
+      status: status,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

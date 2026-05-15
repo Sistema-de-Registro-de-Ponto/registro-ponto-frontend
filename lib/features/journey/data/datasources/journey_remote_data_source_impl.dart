@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../models/journey_dto.dart';
+import '../models/journey_planned_activity_dto.dart';
 import 'journey_remote_data_source.dart';
 
 class JourneyRemoteDataSourceImpl implements JourneyRemoteDataSource {
@@ -35,6 +36,25 @@ class JourneyRemoteDataSourceImpl implements JourneyRemoteDataSource {
       if (data == null) throw ApiException();
 
       return JourneyDto.fromJson(data);
+    } on DioException catch (e) {
+      throw e.mapDioException();
+    }
+  }
+
+  @override
+  Future<JourneyPlannedActivityDto> updatePlannedActivityChecked({
+    required int journeyPlannedActivityId,
+    required bool checked,
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '$_journeysPath/activities/planned/$journeyPlannedActivityId',
+        data: <String, dynamic>{'checked': checked},
+      );
+      final data = response.data;
+      if (data == null) throw ApiException();
+
+      return JourneyPlannedActivityDto.fromJson(data);
     } on DioException catch (e) {
       throw e.mapDioException();
     }

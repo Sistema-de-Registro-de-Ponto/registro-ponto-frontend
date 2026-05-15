@@ -39,4 +39,25 @@ void main() {
     final title = tester.widget<Text>(find.text('Ajustar API de login'));
     expect(title.style?.decoration, TextDecoration.lineThrough);
   });
+
+  testWidgets('item com onTap dispara callback ao tocar', (tester) async {
+    var tapped = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: AppCheckListItem(
+            isChecked: false,
+            title: 'Reunião daily',
+            onTap: () => tapped = true,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Reunião daily'));
+    await tester.pump();
+
+    expect(tapped, isTrue);
+  });
 }

@@ -30,7 +30,10 @@ class JourneySection extends ConsumerWidget {
         if (state.showPlannedActivitiesChecklist)
           AppCheckList(
             title: 'Atividades planejadas para hoje',
-            items: state.checklistItems,
+            items: state.buildChecklistItems(
+              allowToggle: state.isJourneyInProgress,
+              onSetChecked: viewModel.setChecked,
+            ),
           ),
       ],
     );

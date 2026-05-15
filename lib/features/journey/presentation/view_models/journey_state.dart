@@ -9,11 +9,18 @@ class JourneyState extends Equatable {
   final Journey? journey;
   final bool isLoading;
   final String? failure;
+  final int? togglingPlannedActivityId;
 
-  const JourneyState({this.journey, this.isLoading = false, this.failure});
+  const JourneyState({
+    this.journey,
+    this.isLoading = false,
+    this.failure,
+    this.togglingPlannedActivityId,
+  });
 
   @override
-  List<Object?> get props => [journey, isLoading, failure];
+  List<Object?> get props =>
+      [journey, isLoading, failure, togglingPlannedActivityId];
 
   bool get canStartJourney =>
       journey == null || journey?.status != JourneyStatus.inProgress;
@@ -39,13 +46,22 @@ class JourneyState extends Equatable {
     };
   }
 
-  List<AppCheckListItem> get checklistItems {
+  List<AppCheckListItem> buildChecklistItems({
+    required void Function(int journeyPlannedActivityId, bool checked)
+    onSetChecked,
+    required bool allowToggle,
+  }) {
     final activities = journey?.plannedActivities ?? const [];
+
     return activities
         .map(
           (activity) => AppCheckListItem(
             isChecked: activity.checked,
             title: activity.description,
+            onTap: allowToggle
+                ? () => onSetChecked(activity.id, !activity.checked)
+                : null,
+            isBusy: togglingPlannedActivityId == activity.id,
           ),
         )
         .toList();
@@ -55,11 +71,15 @@ class JourneyState extends Equatable {
     Journey? journey,
     bool? isLoading,
     ValueGetter<String?>? failure,
+    ValueGetter<int?>? togglingPlannedActivityId,
   }) {
     return JourneyState(
       journey: journey ?? this.journey,
       isLoading: isLoading ?? this.isLoading,
       failure: failure != null ? failure() : this.failure,
+      togglingPlannedActivityId: togglingPlannedActivityId != null
+          ? togglingPlannedActivityId()
+          : this.togglingPlannedActivityId,
     );
   }
 }
