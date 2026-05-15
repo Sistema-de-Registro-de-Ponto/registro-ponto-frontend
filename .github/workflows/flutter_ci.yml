@@ -1,0 +1,28 @@
+name: Flutter CI
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.0"
+
+      - name: Instalar dependências
+        run: flutter pub get
+
+      - name: Análise estática
+        run: flutter analyze
+
+      - name: Rodar testes
+        run: flutter test
