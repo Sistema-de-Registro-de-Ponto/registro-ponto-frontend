@@ -1,9 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:registro_ponto_frontend/core/utils/api_datetime.dart';
 import 'package:registro_ponto_frontend/features/activity/data/models/planned_activity_dto.dart';
 
 void main() {
-  final createdAt = parseApiDateTime('2026-05-15T12:08:22.904747-03:00');
+  final createdAt = DateTime.parse(
+    '2026-05-15T12:08:22.904747-03:00',
+  ).toLocal();
 
   test('fromJson mapeia id, description e created_at', () {
     final dto = PlannedActivityDto.fromJson({
@@ -20,7 +21,11 @@ void main() {
   });
 
   test('toJson serializa id e description', () {
-    final dto = PlannedActivityDto(id: 3, description: 'Code review', createdAt: createdAt);
+    final dto = PlannedActivityDto(
+      id: 3,
+      description: 'Code review',
+      createdAt: createdAt,
+    );
     expect(dto.toJson(), {'id': 3, 'description': 'Code review'});
   });
 }
