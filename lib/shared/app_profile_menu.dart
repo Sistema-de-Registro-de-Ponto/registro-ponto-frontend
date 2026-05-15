@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:registro_ponto_frontend/app/theme.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/view_models/auth_session_controller.dart';
-import 'package:registro_ponto_frontend/features/colaborador/domain/entities/colaborador_profile.dart';
+import 'package:registro_ponto_frontend/features/collaborator/domain/entities/collaborator_profile.dart';
 
 class AppProfileMenu extends ConsumerWidget {
-  final ColaboradorProfile profile;
+  final CollaboratorProfile profile;
 
   const AppProfileMenu({super.key, required this.profile});
 

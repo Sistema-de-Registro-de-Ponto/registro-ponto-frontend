@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../features/auth/presentation/view_models/auth_session_controller.dart';
 import '../features/auth/presentation/views/login_page.dart';
-import '../features/colaborador/presentation/views/colaborador_shell_page.dart';
+import '../features/collaborator/presentation/views/collaborator_shell_page.dart';
 import 'routes.dart';
 
 part 'router.g.dart';
@@ -33,7 +33,7 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: Routes.home,
         name: 'home',
-        builder: (_, _) => const ColaboradorShellPage(),
+        builder: (_, _) => const CollaboratorShellPage(),
       ),
       GoRoute(
         path: Routes.login,
