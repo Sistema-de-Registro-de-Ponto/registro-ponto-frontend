@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:registro_ponto_frontend/core/extensions/datetime_extensions.dart';
+import 'package:registro_ponto_frontend/features/activity/presentation/widgets/planned_activities_section.dart';
 import 'package:registro_ponto_frontend/shared/app_responsive.dart';
 
 import '../../domain/entities/collaborator_profile.dart';
@@ -12,7 +13,8 @@ class CollaboratorDashboardBody extends StatefulWidget {
   const CollaboratorDashboardBody({super.key, required this.profile});
 
   @override
-  State<CollaboratorDashboardBody> createState() => _CollaboratorDashboardBodyState();
+  State<CollaboratorDashboardBody> createState() =>
+      _CollaboratorDashboardBodyState();
 }
 
 class _CollaboratorDashboardBodyState extends State<CollaboratorDashboardBody> {
@@ -42,25 +44,36 @@ class _CollaboratorDashboardBodyState extends State<CollaboratorDashboardBody> {
     return AppResponsive(
       mobile: Padding(
         padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: 24,
-          children: [
-            _GreetingBlock(now: _now, profile: profile),
-
-            _ClockCard(now: _now),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 24,
+            children: [
+              _GreetingBlock(now: _now, profile: profile),
+              _ClockCard(now: _now),
+              const PlannedActivitiesSection(),
+            ],
+          ),
         ),
       ),
       desktop: Padding(
         padding: const EdgeInsets.all(24),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _GreetingBlock(now: _now, profile: profile),
-            _ClockCard(now: _now),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 24,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _GreetingBlock(now: _now, profile: profile),
+                  _ClockCard(now: _now),
+                ],
+              ),
+              const PlannedActivitiesSection(),
+            ],
+          ),
         ),
       ),
     );
@@ -82,12 +95,16 @@ class _GreetingBlock extends StatelessWidget {
       children: [
         Text(
           '${now.formattedGreeting}, ${profile.firstName}! 👋',
-          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           now.formattedLongDate,
-          style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );
@@ -126,7 +143,9 @@ class _ClockCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               'Horário atual',
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),

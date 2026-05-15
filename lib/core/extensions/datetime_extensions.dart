@@ -19,4 +19,9 @@ extension DateTimeExtensions on DateTime {
   String get formattedHour {
     return DateFormat('HH:mm:ss').format(this);
   }
+
+  String get formattedHourShort {
+    final local = isUtc ? toLocal() : this;
+    return DateFormat('HH:mm').format(local);
+  }
 }
