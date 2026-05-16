@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../features/auth/presentation/view_models/auth_session_controller.dart';
 import '../features/auth/presentation/views/login_page.dart';
+import '../features/auth/presentation/views/splash_page.dart';
 import '../features/collaborator/presentation/views/collaborator_shell_page.dart';
 import 'routes.dart';
 
@@ -16,11 +17,14 @@ GoRouter goRouter(Ref ref) {
   ref.onDispose(refresh.dispose);
 
   return GoRouter(
-    initialLocation: Routes.home,
+    initialLocation: Routes.splash,
     refreshListenable: refresh,
     redirect: (context, state) {
+      final onSplash = state.matchedLocation == Routes.splash;
+      if (onSplash) return null;
+
       final asyncSession = ref.read(authSessionControllerProvider);
-      if (asyncSession.isLoading) return null;
+      if (asyncSession.isLoading) return Routes.splash;
 
       final loggedIn = asyncSession.value != null;
       final goingToLogin = state.matchedLocation == Routes.login;
@@ -30,6 +34,11 @@ GoRouter goRouter(Ref ref) {
       return null;
     },
     routes: [
+      GoRoute(
+        path: Routes.splash,
+        name: 'splash',
+        builder: (_, _) => const SplashPage(),
+      ),
       GoRoute(
         path: Routes.home,
         name: 'home',

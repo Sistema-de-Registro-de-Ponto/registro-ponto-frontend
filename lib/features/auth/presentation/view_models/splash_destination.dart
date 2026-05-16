@@ -1,0 +1,4 @@
+enum SplashDestination {
+  home,
+  login,
+}
