@@ -1,6 +1,7 @@
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_planned_activity.dart';
+import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_unplanned_activity.dart';
 
 abstract class JourneyRepository {
   Future<Result<Journey?, String>> fetchInProgressJourney();
@@ -11,4 +12,11 @@ abstract class JourneyRepository {
     required int journeyPlannedActivityId,
     required bool checked,
   });
+
+  Future<Result<JourneyUnplannedActivity, String>> createUnplannedActivity({
+    required int journeyId,
+    required String description,
+  });
+
+  Future<Result<int, String>> deleteUnplannedActivity({required int id});
 }

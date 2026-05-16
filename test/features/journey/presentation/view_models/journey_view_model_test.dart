@@ -6,6 +6,7 @@ import 'package:registro_ponto_frontend/features/journey/data/repositories/journ
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_planned_activity.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_status.dart';
+import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_unplanned_activity.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/repositories/journey_repository.dart';
 import 'package:registro_ponto_frontend/features/journey/presentation/view_models/journey_state.dart';
 import 'package:registro_ponto_frontend/features/journey/presentation/view_models/journey_view_model.dart';
@@ -218,5 +219,91 @@ void main() {
     expect(readState().togglingPlannedActivityId, isNull);
     expect(readState().failure, 'Não foi possível atualizar');
     expect(readState().journey?.plannedActivities.single.checked, isTrue);
+  });
+
+  test('submitUnplannedActivity em sucesso anexa atividade à jornada', () async {
+    when(() => repo.fetchInProgressJourney())
+        .thenAnswer((_) async => Success<Journey?, String>(journeyInProgress));
+
+    final createdAt = DateTime.parse('2026-05-15T09:15:00-03:00').toLocal();
+    final created = JourneyUnplannedActivity(
+      id: 5,
+      journeyId: 10,
+      description: 'Nova tarefa',
+      createdAt: createdAt,
+    );
+
+    when(
+      () => repo.createUnplannedActivity(
+        journeyId: 10,
+        description: 'Nova tarefa',
+      ),
+    ).thenAnswer((_) async => Success<JourneyUnplannedActivity, String>(created));
+
+    await waitForInitialLoad();
+
+    notifier().setUnplannedDescription('Nova tarefa');
+    await notifier().submitUnplannedActivity();
+
+    expect(readState().unplannedDescription, '');
+    expect(readState().journey?.unplannedActivities.single, created);
+    verify(
+      () => repo.createUnplannedActivity(
+        journeyId: 10,
+        description: 'Nova tarefa',
+      ),
+    ).called(1);
+  });
+
+  test('submitUnplannedActivity com descrição vazia define erro de validação', () async {
+    when(() => repo.fetchInProgressJourney())
+        .thenAnswer((_) async => Success<Journey?, String>(journeyInProgress));
+
+    await waitForInitialLoad();
+
+    notifier().setUnplannedDescription('   ');
+    await notifier().submitUnplannedActivity();
+
+    expect(readState().unplannedDescriptionErrorText, 'Campo obrigatório');
+  });
+
+  test('deleteUnplannedActivity em sucesso remove da jornada', () async {
+    final journeyWithUnplanned = Journey(
+      id: 10,
+      collaboratorId: 4,
+      startedAt: startedAt,
+      plannedActivities: const [
+        JourneyPlannedActivity(
+          id: 1,
+          plannedActivityId: 7,
+          description: 'Ajustar API de login',
+          checked: true,
+        ),
+      ],
+      unplannedActivities: [
+        JourneyUnplannedActivity(
+          id: 5,
+          journeyId: 10,
+          description: 'Remover',
+          createdAt: updatedAt,
+        ),
+      ],
+      status: JourneyStatus.inProgress,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+
+    when(() => repo.fetchInProgressJourney())
+        .thenAnswer((_) async => Success<Journey?, String>(journeyWithUnplanned));
+
+    when(() => repo.deleteUnplannedActivity(id: 5))
+        .thenAnswer((_) async => const Success<int, String>(5));
+
+    await waitForInitialLoad();
+
+    await notifier().deleteUnplannedActivity(5);
+
+    expect(readState().journey?.unplannedActivities, isEmpty);
+    verify(() => repo.deleteUnplannedActivity(id: 5)).called(1);
   });
 }

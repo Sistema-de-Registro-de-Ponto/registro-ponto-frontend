@@ -66,6 +66,29 @@ void main() {
 
     expect(submitted, isTrue);
   });
+
+  testWidgets('com interactionEnabled false não dispara onSubmitted ao tocar no botão', (tester) async {
+    var submitted = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: AppInformActivity(
+            title: 'Adicionar atividade planejada',
+            hintText: 'Descreva a atividade...',
+            interactionEnabled: false,
+            onDescriptionChanged: (_) {},
+            onSubmitted: () => submitted = true,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Adicionar atividade'));
+    await tester.pump();
+
+    expect(submitted, isFalse);
+  });
 }
 
 void _noop() {}

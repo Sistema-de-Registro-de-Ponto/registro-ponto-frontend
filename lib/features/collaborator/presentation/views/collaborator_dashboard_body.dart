@@ -1,25 +1,30 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:registro_ponto_frontend/core/extensions/datetime_extensions.dart';
 import 'package:registro_ponto_frontend/core/utils/constants.dart';
 import 'package:registro_ponto_frontend/features/activity/presentation/widgets/planned_activities_section.dart';
+import 'package:registro_ponto_frontend/features/journey/presentation/view_models/journey_view_model.dart';
 import 'package:registro_ponto_frontend/features/journey/presentation/widgets/journey_section.dart';
+import 'package:registro_ponto_frontend/features/journey/presentation/widgets/unplanned_activities_section.dart';
+import 'package:registro_ponto_frontend/shared/app_error_banner.dart';
 import 'package:registro_ponto_frontend/shared/app_responsive.dart';
 
 import '../../domain/entities/collaborator_profile.dart';
 
-class CollaboratorDashboardBody extends StatefulWidget {
+class CollaboratorDashboardBody extends ConsumerStatefulWidget {
   final CollaboratorProfile profile;
 
   const CollaboratorDashboardBody({super.key, required this.profile});
 
   @override
-  State<CollaboratorDashboardBody> createState() =>
+  ConsumerState<CollaboratorDashboardBody> createState() =>
       _CollaboratorDashboardBodyState();
 }
 
-class _CollaboratorDashboardBodyState extends State<CollaboratorDashboardBody> {
+class _CollaboratorDashboardBodyState
+    extends ConsumerState<CollaboratorDashboardBody> {
   Timer? _timer;
   late DateTime _now;
 
@@ -43,53 +48,65 @@ class _CollaboratorDashboardBodyState extends State<CollaboratorDashboardBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: Constants.desktopBreakpoint,
-        ),
-        child: AppResponsive(
-          mobile: Padding(
-            padding: const EdgeInsets.all(24),
-            child: SingleChildScrollView(
+    final journeyState = ref.watch(journeyViewModelProvider);
+
+    return SingleChildScrollView(
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: Constants.desktopBreakpoint,
+          ),
+          child: AppResponsive(
+            mobile: Padding(
+              padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 spacing: 24,
                 children: [
                   _GreetingBlock(now: _now, profile: profile),
                   _ClockCard(now: _now),
+                  if (journeyState.failure case final failure?)
+                    AppErrorBanner(message: failure),
                   const JourneySection(),
-                  const PlannedActivitiesSection(),
+                  if (journeyState.showUnplannedActivitiesPanel)
+                    const UnplannedActivitiesSection(),
+                  if (journeyState.showPlannedActivitiesChecklist)
+                    const PlannedActivitiesSection(),
                 ],
               ),
             ),
-          ),
-          desktop: Padding(
-            padding: const EdgeInsets.all(24),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: 24,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Center(
-                        child: _GreetingBlock(now: _now, profile: profile),
-                      ),
-                      Center(child: _ClockCard(now: _now)),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 16,
-                    children: [
-                      Flexible(child: const JourneySection()),
-                      Flexible(child: const PlannedActivitiesSection()),
-                    ],
-                  ),
-                ],
+            desktop: Padding(
+              padding: const EdgeInsets.all(24),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 24,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Center(
+                          child: _GreetingBlock(now: _now, profile: profile),
+                        ),
+                        Center(child: _ClockCard(now: _now)),
+                      ],
+                    ),
+                    if (journeyState.failure case final failure?)
+                      AppErrorBanner(message: failure),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 16,
+                      children: [
+                        Flexible(child: const JourneySection()),
+                        if (journeyState.showUnplannedActivitiesPanel)
+                          Flexible(child: const UnplannedActivitiesSection()),
+                        if (journeyState.showPlannedActivitiesChecklist)
+                          Flexible(child: const PlannedActivitiesSection()),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

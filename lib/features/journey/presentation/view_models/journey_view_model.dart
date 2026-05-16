@@ -4,6 +4,7 @@ import '../../../../core/utils/result.dart';
 import '../../data/repositories/journey_repository_provider.dart';
 import '../../domain/entities/journey.dart';
 import '../../domain/entities/journey_planned_activity.dart';
+import '../../domain/entities/journey_unplanned_activity.dart';
 import 'journey_state.dart';
 
 part 'journey_view_model.g.dart';
@@ -26,7 +27,17 @@ class JourneyViewModel extends _$JourneyViewModel {
 
     switch (result) {
       case Success<Journey?, String>():
-        state = JourneyState(isLoading: false, journey: result.value);
+        final keepFormFields = result.value != null;
+        state = JourneyState(
+          isLoading: false,
+          journey: result.value,
+          unplannedDescription: keepFormFields
+              ? state.unplannedDescription
+              : '',
+          unplannedDescriptionErrorText: keepFormFields
+              ? state.unplannedDescriptionErrorText
+              : null,
+        );
       case Failure<Journey?, String>():
         state = state.copyWith(isLoading: false, failure: () => result.error);
     }
@@ -82,6 +93,80 @@ class JourneyViewModel extends _$JourneyViewModel {
       case Failure<JourneyPlannedActivity, String>():
         state = state.copyWith(
           togglingPlannedActivityId: () => null,
+          failure: () => result.error,
+        );
+    }
+  }
+
+  void setUnplannedDescription(String value) {
+    state = state.copyWith(
+      unplannedDescription: value,
+      unplannedDescriptionErrorText: () => null,
+    );
+  }
+
+  Future<void> submitUnplannedActivity() async {
+    final journey = state.journey;
+    if (journey == null || !state.isJourneyInProgress) return;
+    if (state.isUnplannedMutationBusy) return;
+
+    final trimmed = state.unplannedDescription.trim();
+    if (trimmed.isEmpty) {
+      state = state.copyWith(
+        unplannedDescriptionErrorText: () => 'Campo obrigatório',
+      );
+      return;
+    }
+
+    state = state.copyWith(
+      isUnplannedActivitySubmitting: true,
+      unplannedDescriptionErrorText: () => null,
+      failure: () => null,
+    );
+
+    final result = await _repository.createUnplannedActivity(
+      journeyId: journey.id,
+      description: trimmed,
+    );
+    if (!ref.mounted) return;
+
+    switch (result) {
+      case Success<JourneyUnplannedActivity, String>():
+        state = state.copyWith(
+          isUnplannedActivitySubmitting: false,
+          unplannedDescription: '',
+          journey: journey.withAppendedUnplannedActivity(result.value),
+        );
+      case Failure<JourneyUnplannedActivity, String>():
+        state = state.copyWith(
+          isUnplannedActivitySubmitting: false,
+          failure: () => result.error,
+        );
+    }
+  }
+
+  Future<void> deleteUnplannedActivity(int id) async {
+    final journey = state.journey;
+    if (journey == null || !state.isJourneyInProgress) return;
+    if (state.isUnplannedMutationBusy) return;
+
+    state = state.copyWith(
+      deletingUnplannedActivityId: () => id,
+      failure: () => null,
+    );
+
+    final result = await _repository.deleteUnplannedActivity(id: id);
+    if (!ref.mounted) return;
+
+    switch (result) {
+      case Success<int, String>():
+        state = state.copyWith(
+          deletingUnplannedActivityId: () => null,
+          journey: journey.withoutUnplannedActivity(id),
+        );
+      case Failure<int, String>():
+        state = state.copyWith(
+          deletingUnplannedActivityId: () => null,
           failure: () => result.error,
         );
     }

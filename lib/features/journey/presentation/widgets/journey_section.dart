@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:registro_ponto_frontend/shared/app_check_list.dart';
-import 'package:registro_ponto_frontend/shared/app_error_banner.dart';
 import 'package:registro_ponto_frontend/shared/app_journey.dart';
 
 import '../view_models/journey_view_model.dart';
@@ -18,7 +17,6 @@ class JourneySection extends ConsumerWidget {
     return Column(
       spacing: 16,
       children: [
-        if (state.failure case final failure?) AppErrorBanner(message: failure),
         AppJourney(
           status: state.uiStatus,
           startedHour: journey?.startedHourLabel,
@@ -27,7 +25,7 @@ class JourneySection extends ConsumerWidget {
           canStartJourney: state.canStartJourney,
           onStartJourney: viewModel.startJourney,
         ),
-        if (state.showPlannedActivitiesChecklist)
+        if (state.isJourneyInProgress)
           AppCheckList(
             title: 'Atividades planejadas para hoje',
             items: state.buildChecklistItems(

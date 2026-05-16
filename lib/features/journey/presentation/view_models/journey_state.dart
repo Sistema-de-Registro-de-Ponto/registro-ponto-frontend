@@ -10,17 +10,33 @@ class JourneyState extends Equatable {
   final bool isLoading;
   final String? failure;
   final int? togglingPlannedActivityId;
+  final String unplannedDescription;
+  final String? unplannedDescriptionErrorText;
+  final bool isUnplannedActivitySubmitting;
+  final int? deletingUnplannedActivityId;
 
   const JourneyState({
     this.journey,
     this.isLoading = false,
     this.failure,
     this.togglingPlannedActivityId,
+    this.unplannedDescription = '',
+    this.unplannedDescriptionErrorText,
+    this.isUnplannedActivitySubmitting = false,
+    this.deletingUnplannedActivityId,
   });
 
   @override
-  List<Object?> get props =>
-      [journey, isLoading, failure, togglingPlannedActivityId];
+  List<Object?> get props => [
+    journey,
+    isLoading,
+    failure,
+    togglingPlannedActivityId,
+    unplannedDescription,
+    unplannedDescriptionErrorText,
+    isUnplannedActivitySubmitting,
+    deletingUnplannedActivityId,
+  ];
 
   bool get canStartJourney =>
       journey == null || journey?.status != JourneyStatus.inProgress;
@@ -31,9 +47,18 @@ class JourneyState extends Equatable {
     final current = journey;
     if (current == null || current.plannedActivities.isEmpty) return false;
 
-    return current.status == JourneyStatus.inProgress ||
-        current.status == JourneyStatus.completed;
+    return current.status != JourneyStatus.inProgress;
   }
+
+  bool get showUnplannedActivitiesPanel {
+    final current = journey;
+    if (current == null) return false;
+
+    return current.status == JourneyStatus.inProgress;
+  }
+
+  bool get isUnplannedMutationBusy =>
+      isUnplannedActivitySubmitting || deletingUnplannedActivityId != null;
 
   AppJourneyStatus get uiStatus {
     final current = journey;
@@ -72,6 +97,10 @@ class JourneyState extends Equatable {
     bool? isLoading,
     ValueGetter<String?>? failure,
     ValueGetter<int?>? togglingPlannedActivityId,
+    String? unplannedDescription,
+    ValueGetter<String?>? unplannedDescriptionErrorText,
+    bool? isUnplannedActivitySubmitting,
+    ValueGetter<int?>? deletingUnplannedActivityId,
   }) {
     return JourneyState(
       journey: journey ?? this.journey,
@@ -80,6 +109,15 @@ class JourneyState extends Equatable {
       togglingPlannedActivityId: togglingPlannedActivityId != null
           ? togglingPlannedActivityId()
           : this.togglingPlannedActivityId,
+      unplannedDescription: unplannedDescription ?? this.unplannedDescription,
+      unplannedDescriptionErrorText: unplannedDescriptionErrorText != null
+          ? unplannedDescriptionErrorText()
+          : this.unplannedDescriptionErrorText,
+      isUnplannedActivitySubmitting:
+          isUnplannedActivitySubmitting ?? this.isUnplannedActivitySubmitting,
+      deletingUnplannedActivityId: deletingUnplannedActivityId != null
+          ? deletingUnplannedActivityId()
+          : this.deletingUnplannedActivityId,
     );
   }
 }

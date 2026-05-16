@@ -11,6 +11,7 @@ class AppInformActivity extends StatelessWidget {
   final VoidCallback? onSubmitted;
   final bool isSubmitting;
   final List<Widget>? children;
+  final bool interactionEnabled;
 
   const AppInformActivity({
     super.key,
@@ -22,11 +23,13 @@ class AppInformActivity extends StatelessWidget {
     this.isSubmitting = false,
     this.descriptionErrorText,
     this.children,
+    this.interactionEnabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final canUseForm = interactionEnabled && !isSubmitting;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -45,19 +48,19 @@ class AppInformActivity extends StatelessWidget {
               ),
               AppTextFormField(
                 controller: descriptionController,
-                enabled: !isSubmitting,
+                enabled: canUseForm,
                 onChanged: onDescriptionChanged,
-                onFieldSubmitted: isSubmitting
-                    ? null
-                    : (_) => onSubmitted?.call(),
+                onFieldSubmitted: canUseForm
+                    ? (_) => onSubmitted?.call()
+                    : null,
                 textInputAction: TextInputAction.done,
                 hintText: hintText,
                 errorText: descriptionErrorText,
               ),
               AppFilledButton(
-                onPressed: isSubmitting ? null : onSubmitted,
+                onPressed: canUseForm ? onSubmitted : null,
                 isLoading: isSubmitting,
-                isEnabled: !isSubmitting,
+                isEnabled: canUseForm,
                 text: 'Adicionar atividade',
                 icon: Icons.add,
               ),

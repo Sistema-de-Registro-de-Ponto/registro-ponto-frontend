@@ -3,12 +3,14 @@ import 'package:registro_ponto_frontend/core/extensions/datetime_extensions.dart
 
 import 'journey_planned_activity.dart';
 import 'journey_status.dart';
+import 'journey_unplanned_activity.dart';
 
 class Journey extends Equatable {
   final int id;
   final int collaboratorId;
   final DateTime startedAt;
   final List<JourneyPlannedActivity> plannedActivities;
+  final List<JourneyUnplannedActivity> unplannedActivities;
   final JourneyStatus status;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -18,6 +20,7 @@ class Journey extends Equatable {
     required this.collaboratorId,
     required this.startedAt,
     required this.plannedActivities,
+    this.unplannedActivities = const [],
     required this.status,
     required this.createdAt,
     required this.updatedAt,
@@ -33,6 +36,35 @@ class Journey extends Equatable {
       plannedActivities: plannedActivities
           .map((item) => item.id == updated.id ? updated : item)
           .toList(),
+      unplannedActivities: unplannedActivities,
+      status: status,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
+  Journey withAppendedUnplannedActivity(JourneyUnplannedActivity activity) {
+    return Journey(
+      id: id,
+      collaboratorId: collaboratorId,
+      startedAt: startedAt,
+      plannedActivities: plannedActivities,
+      unplannedActivities: [activity, ...unplannedActivities],
+      status: status,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
+  Journey withoutUnplannedActivity(int activityId) {
+    return Journey(
+      id: id,
+      collaboratorId: collaboratorId,
+      startedAt: startedAt,
+      plannedActivities: plannedActivities,
+      unplannedActivities: unplannedActivities
+          .where((item) => item.id != activityId)
+          .toList(),
       status: status,
       createdAt: createdAt,
       updatedAt: updatedAt,
@@ -45,6 +77,7 @@ class Journey extends Equatable {
     collaboratorId,
     startedAt,
     plannedActivities,
+    unplannedActivities,
     status,
     createdAt,
     updatedAt,

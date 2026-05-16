@@ -4,7 +4,6 @@ import 'package:registro_ponto_frontend/shared/app_error_banner.dart';
 import 'package:registro_ponto_frontend/shared/app_inform_activity.dart';
 import 'package:registro_ponto_frontend/shared/app_pending_activity_item.dart';
 
-import '../../../journey/presentation/view_models/journey_view_model.dart';
 import '../view_models/activity_state.dart';
 import '../view_models/activity_view_model.dart';
 
@@ -28,9 +27,6 @@ class _PlannedActivitiesSectionState
 
   @override
   Widget build(BuildContext context) {
-    final journeyState = ref.watch(journeyViewModelProvider);
-    if (journeyState.isJourneyInProgress) return const SizedBox.shrink();
-
     final state = ref.watch(activityViewModelProvider);
     final viewModel = ref.read(activityViewModelProvider.notifier);
     final theme = Theme.of(context);
