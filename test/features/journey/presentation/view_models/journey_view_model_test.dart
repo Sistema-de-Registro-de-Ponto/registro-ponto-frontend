@@ -306,4 +306,122 @@ void main() {
     expect(readState().journey?.unplannedActivities, isEmpty);
     verify(() => repo.deleteUnplannedActivity(id: 5)).called(1);
   });
+
+  group('endJourney', () {
+    final endedAt = DateTime.parse('2026-05-15T17:30:00-03:00').toLocal();
+    final completedUpdatedAt =
+        DateTime.parse('2026-05-15T17:30:01-03:00').toLocal();
+
+    test('em sucesso limpa jornada e formulário para nova jornada', () async {
+      final completed = Journey(
+        id: 10,
+        collaboratorId: 4,
+        startedAt: startedAt,
+        endedAt: endedAt,
+        duration: const Duration(hours: 8),
+        summary: 'Dia produtivo.',
+        plannedActivities: journeyInProgress.plannedActivities,
+        status: JourneyStatus.completed,
+        createdAt: createdAt,
+        updatedAt: completedUpdatedAt,
+      );
+
+      when(() => repo.fetchInProgressJourney())
+          .thenAnswer((_) async => Success<Journey?, String>(journeyInProgress));
+      when(
+        () => repo.endJourney(summary: 'Dia produtivo.'),
+      ).thenAnswer((_) async => Success<Journey, String>(completed));
+
+      await waitForInitialLoad();
+      notifier().setUnplannedDescription('Rascunho');
+      await notifier().endJourney('  Dia produtivo.  ');
+
+      expect(readState().isEndingJourney, isFalse);
+      expect(readState().journey, isNull);
+      expect(readState().canStartJourney, isTrue);
+      expect(readState().showPlannedActivitiesChecklist, isTrue);
+      expect(readState().showJourneyPlannedChecklist, isFalse);
+      expect(readState().unplannedDescription, '');
+      verify(() => repo.endJourney(summary: 'Dia produtivo.')).called(1);
+    });
+
+    test('em Failure preenche failure', () async {
+      when(() => repo.fetchInProgressJourney())
+          .thenAnswer((_) async => Success<Journey?, String>(journeyInProgress));
+      when(() => repo.endJourney(summary: 'Resumo')).thenAnswer(
+        (_) async => const Failure<Journey, String>('Não foi possível encerrar'),
+      );
+
+      await waitForInitialLoad();
+      await notifier().endJourney('Resumo');
+
+      expect(readState().isEndingJourney, isFalse);
+      expect(readState().isJourneyInProgress, isTrue);
+      expect(readState().failure, 'Não foi possível encerrar');
+    });
+
+    test('com jornada concluída não chama o repositório', () async {
+      await waitForInitialLoad();
+      notifier().state = JourneyState(journey: journeyCompleted);
+
+      await notifier().endJourney('Resumo');
+
+      expect(readState().failure, 'A jornada não está em andamento');
+      verifyNever(() => repo.endJourney(summary: any(named: 'summary')));
+    });
+  });
+
+  test('setChecked com jornada concluída não chama o repositório', () async {
+    await waitForInitialLoad();
+    notifier().state = JourneyState(journey: journeyCompleted);
+
+    await notifier().setChecked(1, false);
+
+    verifyNever(
+      () => repo.updatePlannedActivityChecked(
+        journeyPlannedActivityId: any(named: 'journeyPlannedActivityId'),
+        checked: any(named: 'checked'),
+      ),
+    );
+  });
+
+  test('submitUnplannedActivity com jornada concluída não chama o repositório', () async {
+    await waitForInitialLoad();
+    notifier().state = JourneyState(journey: journeyCompleted);
+
+    notifier().setUnplannedDescription('Nova');
+    await notifier().submitUnplannedActivity();
+
+    verifyNever(
+      () => repo.createUnplannedActivity(
+        journeyId: any(named: 'journeyId'),
+        description: any(named: 'description'),
+      ),
+    );
+  });
+
+  test('showPlannedActivitiesChecklist exibe seção com jornada concluída', () async {
+    await waitForInitialLoad();
+    notifier().state = JourneyState(journey: journeyCompleted);
+
+    expect(readState().showPlannedActivitiesChecklist, isTrue);
+  });
+
+  test('showJourneyPlannedChecklist oculta checklist quando concluída', () async {
+    final completedWithActivities = Journey(
+      id: 10,
+      collaboratorId: 4,
+      startedAt: startedAt,
+      plannedActivities: journeyInProgress.plannedActivities,
+      status: JourneyStatus.completed,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+
+    await waitForInitialLoad();
+    notifier().state = JourneyState(journey: completedWithActivities);
+
+    expect(readState().showJourneyPlannedChecklist, isFalse);
+    expect(readState().isJourneyInProgress, isFalse);
+  });
 }

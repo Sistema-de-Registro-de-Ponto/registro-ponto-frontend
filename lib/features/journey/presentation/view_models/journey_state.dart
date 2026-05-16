@@ -14,6 +14,7 @@ class JourneyState extends Equatable {
   final String? unplannedDescriptionErrorText;
   final bool isUnplannedActivitySubmitting;
   final int? deletingUnplannedActivityId;
+  final bool isEndingJourney;
 
   const JourneyState({
     this.journey,
@@ -24,6 +25,7 @@ class JourneyState extends Equatable {
     this.unplannedDescriptionErrorText,
     this.isUnplannedActivitySubmitting = false,
     this.deletingUnplannedActivityId,
+    this.isEndingJourney = false,
   });
 
   @override
@@ -36,6 +38,7 @@ class JourneyState extends Equatable {
     unplannedDescriptionErrorText,
     isUnplannedActivitySubmitting,
     deletingUnplannedActivityId,
+    isEndingJourney,
   ];
 
   bool get canStartJourney =>
@@ -43,11 +46,23 @@ class JourneyState extends Equatable {
 
   bool get isJourneyInProgress => journey?.status == JourneyStatus.inProgress;
 
+  bool get isJourneyCompleted => journey?.status == JourneyStatus.completed;
+
+  bool get canEndJourney => isJourneyInProgress && !isEndingJourney;
+
   bool get showPlannedActivitiesChecklist {
+    final current = journey;
+    if (current == null) return true;
+    if (current.status == JourneyStatus.inProgress) return false;
+
+    return true;
+  }
+
+  bool get showJourneyPlannedChecklist {
     final current = journey;
     if (current == null || current.plannedActivities.isEmpty) return false;
 
-    return current.status != JourneyStatus.inProgress;
+    return current.status == JourneyStatus.inProgress;
   }
 
   bool get showUnplannedActivitiesPanel {
@@ -93,7 +108,7 @@ class JourneyState extends Equatable {
   }
 
   JourneyState copyWith({
-    Journey? journey,
+    ValueGetter<Journey?>? journey,
     bool? isLoading,
     ValueGetter<String?>? failure,
     ValueGetter<int?>? togglingPlannedActivityId,
@@ -101,9 +116,10 @@ class JourneyState extends Equatable {
     ValueGetter<String?>? unplannedDescriptionErrorText,
     bool? isUnplannedActivitySubmitting,
     ValueGetter<int?>? deletingUnplannedActivityId,
+    bool? isEndingJourney,
   }) {
     return JourneyState(
-      journey: journey ?? this.journey,
+      journey: journey != null ? journey() : this.journey,
       isLoading: isLoading ?? this.isLoading,
       failure: failure != null ? failure() : this.failure,
       togglingPlannedActivityId: togglingPlannedActivityId != null
@@ -118,6 +134,7 @@ class JourneyState extends Equatable {
       deletingUnplannedActivityId: deletingUnplannedActivityId != null
           ? deletingUnplannedActivityId()
           : this.deletingUnplannedActivityId,
+      isEndingJourney: isEndingJourney ?? this.isEndingJourney,
     );
   }
 }

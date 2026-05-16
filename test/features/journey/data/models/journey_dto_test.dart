@@ -79,4 +79,63 @@ void main() {
     final entity = dto.toEntity();
     expect(entity.unplannedActivities.single.createdAt.formattedHourShort, '09:15');
   });
+
+  test('fromJson mapeia ended_at, duration_seconds e summary quando presentes', () {
+    final endedAt = DateTime.parse('2026-05-15T17:30:00-03:00').toLocal();
+
+    final dto = JourneyDto.fromJson({
+      'id': 10,
+      'collaborator_id': 4,
+      'started_at': '2026-05-15T08:03:00-03:00',
+      'ended_at': '2026-05-15T17:30:00-03:00',
+      'duration_seconds': 28_800,
+      'summary': 'Dia focado em integrações e revisão de PRs.',
+      'journey_planned_activities': <Map<String, dynamic>>[],
+      'status': 'completed',
+      'created_at': '2026-05-15T08:03:01-03:00',
+      'updated_at': '2026-05-15T17:30:01-03:00',
+    });
+
+    expect(dto.endedAt, endedAt);
+    expect(dto.duration, const Duration(hours: 8));
+    expect(dto.summary, 'Dia focado em integrações e revisão de PRs.');
+
+    final entity = dto.toEntity();
+    expect(entity.endedAt, endedAt);
+    expect(entity.duration, const Duration(hours: 8));
+    expect(entity.summary, 'Dia focado em integrações e revisão de PRs.');
+    expect(entity.status, JourneyStatus.completed);
+  });
+
+  test('fromResponseJson lê jornada aninhada em journey', () {
+    final dto = JourneyDto.fromResponseJson({
+      'journey': {
+        'id': 10,
+        'collaborator_id': 4,
+        'started_at': '2026-05-15T08:03:00-03:00',
+        'journey_planned_activities': <Map<String, dynamic>>[],
+        'status': 'completed',
+        'created_at': '2026-05-15T08:03:01-03:00',
+        'updated_at': '2026-05-15T17:30:01-03:00',
+      },
+    });
+
+    expect(dto.id, 10);
+    expect(dto.status, JourneyStatus.completed);
+  });
+
+  test('fromResponseJson usa o root quando não há chave journey', () {
+    final dto = JourneyDto.fromResponseJson({
+      'id': 11,
+      'collaborator_id': 4,
+      'started_at': '2026-05-15T08:03:00-03:00',
+      'journey_planned_activities': <Map<String, dynamic>>[],
+      'status': 'in_progress',
+      'created_at': '2026-05-15T08:03:01-03:00',
+      'updated_at': '2026-05-15T08:03:01-03:00',
+    });
+
+    expect(dto.id, 11);
+    expect(dto.status, JourneyStatus.inProgress);
+  });
 }

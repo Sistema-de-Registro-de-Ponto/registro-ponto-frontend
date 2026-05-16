@@ -4,6 +4,7 @@ import '../../../../core/utils/result.dart';
 import '../../data/repositories/journey_repository_provider.dart';
 import '../../domain/entities/journey.dart';
 import '../../domain/entities/journey_planned_activity.dart';
+import '../../domain/entities/journey_status.dart';
 import '../../domain/entities/journey_unplanned_activity.dart';
 import 'journey_state.dart';
 
@@ -14,10 +15,7 @@ class JourneyViewModel extends _$JourneyViewModel {
   late final _repository = ref.read(journeyRepositoryProvider);
 
   @override
-  JourneyState build() {
-    Future.microtask(loadInProgressJourney);
-    return const JourneyState();
-  }
+  JourneyState build() => const JourneyState();
 
   Future<void> loadInProgressJourney() async {
     state = state.copyWith(isLoading: true, failure: () => null);
@@ -60,7 +58,7 @@ class JourneyViewModel extends _$JourneyViewModel {
       case Success<Journey, String>():
         state = state.copyWith(
           isLoading: false,
-          journey: result.value,
+          journey: () => result.value,
           failure: () => null,
         );
       case Failure<Journey, String>():
@@ -68,9 +66,48 @@ class JourneyViewModel extends _$JourneyViewModel {
     }
   }
 
+  Future<bool> endJourney(String summary) async {
+    if (!state.canEndJourney) {
+      final current = state.journey;
+      if (current != null && current.status != JourneyStatus.inProgress) {
+        state = state.copyWith(
+          failure: () => 'A jornada não está em andamento',
+        );
+      }
+      return false;
+    }
+
+    state = state.copyWith(isEndingJourney: true, failure: () => null);
+
+    final result = await _repository.endJourney(summary: summary.trim());
+    if (!ref.mounted) return false;
+
+    switch (result) {
+      case Success<Journey, String>():
+        state = state.copyWith(
+          isEndingJourney: false,
+          journey: () => null,
+          failure: () => null,
+          unplannedDescription: '',
+          unplannedDescriptionErrorText: () => null,
+        );
+        return true;
+      case Failure<Journey, String>():
+        state = state.copyWith(
+          isEndingJourney: false,
+          failure: () => result.error,
+        );
+        return false;
+    }
+  }
+
   Future<void> setChecked(int journeyPlannedActivityId, bool checked) async {
     final journey = state.journey;
-    if (journey == null || state.togglingPlannedActivityId != null) return;
+    if (journey == null ||
+        !state.isJourneyInProgress ||
+        state.togglingPlannedActivityId != null) {
+      return;
+    }
 
     state = state.copyWith(
       togglingPlannedActivityId: () => journeyPlannedActivityId,
@@ -87,7 +124,7 @@ class JourneyViewModel extends _$JourneyViewModel {
       case Success<JourneyPlannedActivity, String>():
         final updatedJourney = journey.withUpdatedPlannedActivity(result.value);
         state = state.copyWith(
-          journey: updatedJourney,
+          journey: () => updatedJourney,
           togglingPlannedActivityId: () => null,
         );
       case Failure<JourneyPlannedActivity, String>():
@@ -99,6 +136,8 @@ class JourneyViewModel extends _$JourneyViewModel {
   }
 
   void setUnplannedDescription(String value) {
+    if (!state.isJourneyInProgress) return;
+
     state = state.copyWith(
       unplannedDescription: value,
       unplannedDescriptionErrorText: () => null,
@@ -135,7 +174,7 @@ class JourneyViewModel extends _$JourneyViewModel {
         state = state.copyWith(
           isUnplannedActivitySubmitting: false,
           unplannedDescription: '',
-          journey: journey.withAppendedUnplannedActivity(result.value),
+          journey: () => journey.withAppendedUnplannedActivity(result.value),
         );
       case Failure<JourneyUnplannedActivity, String>():
         state = state.copyWith(
@@ -162,7 +201,7 @@ class JourneyViewModel extends _$JourneyViewModel {
       case Success<int, String>():
         state = state.copyWith(
           deletingUnplannedActivityId: () => null,
-          journey: journey.withoutUnplannedActivity(id),
+          journey: () => journey.withoutUnplannedActivity(id),
         );
       case Failure<int, String>():
         state = state.copyWith(

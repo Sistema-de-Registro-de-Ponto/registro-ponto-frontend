@@ -9,6 +9,9 @@ class Journey extends Equatable {
   final int id;
   final int collaboratorId;
   final DateTime startedAt;
+  final DateTime? endedAt;
+  final Duration? duration;
+  final String? summary;
   final List<JourneyPlannedActivity> plannedActivities;
   final List<JourneyUnplannedActivity> unplannedActivities;
   final JourneyStatus status;
@@ -19,6 +22,9 @@ class Journey extends Equatable {
     required this.id,
     required this.collaboratorId,
     required this.startedAt,
+    this.endedAt,
+    this.duration,
+    this.summary,
     required this.plannedActivities,
     this.unplannedActivities = const [],
     required this.status,
@@ -33,6 +39,9 @@ class Journey extends Equatable {
       id: id,
       collaboratorId: collaboratorId,
       startedAt: startedAt,
+      endedAt: endedAt,
+      duration: duration,
+      summary: summary,
       plannedActivities: plannedActivities
           .map((item) => item.id == updated.id ? updated : item)
           .toList(),
@@ -48,6 +57,9 @@ class Journey extends Equatable {
       id: id,
       collaboratorId: collaboratorId,
       startedAt: startedAt,
+      endedAt: endedAt,
+      duration: duration,
+      summary: summary,
       plannedActivities: plannedActivities,
       unplannedActivities: [activity, ...unplannedActivities],
       status: status,
@@ -61,6 +73,9 @@ class Journey extends Equatable {
       id: id,
       collaboratorId: collaboratorId,
       startedAt: startedAt,
+      endedAt: endedAt,
+      duration: duration,
+      summary: summary,
       plannedActivities: plannedActivities,
       unplannedActivities: unplannedActivities
           .where((item) => item.id != activityId)
@@ -76,6 +91,9 @@ class Journey extends Equatable {
     id,
     collaboratorId,
     startedAt,
+    endedAt,
+    duration,
+    summary,
     plannedActivities,
     unplannedActivities,
     status,

@@ -8,6 +8,9 @@ class JourneyDto {
   final int id;
   final int collaboratorId;
   final DateTime startedAt;
+  final DateTime? endedAt;
+  final Duration? duration;
+  final String? summary;
   final List<JourneyPlannedActivityDto> plannedActivities;
   final List<JourneyUnplannedActivityDto> unplannedActivities;
   final JourneyStatus status;
@@ -18,12 +21,30 @@ class JourneyDto {
     required this.id,
     required this.collaboratorId,
     required this.startedAt,
+    this.endedAt,
+    this.duration,
+    this.summary,
     required this.plannedActivities,
     this.unplannedActivities = const [],
     required this.status,
     required this.createdAt,
     required this.updatedAt,
   });
+
+  static Duration? _durationFromJson(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is int) return Duration(seconds: raw);
+    if (raw is num) return Duration(seconds: raw.round());
+    return null;
+  }
+
+  factory JourneyDto.fromResponseJson(Map<String, dynamic> json) {
+    final journeyJson = json['journey'];
+    if (journeyJson is Map<String, dynamic>) {
+      return JourneyDto.fromJson(journeyJson);
+    }
+    return JourneyDto.fromJson(json);
+  }
 
   factory JourneyDto.fromJson(Map<String, dynamic> json) {
     final activitiesJson = json['journey_planned_activities'];
@@ -42,10 +63,21 @@ class JourneyDto {
               .toList()
         : <JourneyUnplannedActivityDto>[];
 
+    final endedRaw = json['ended_at'];
+    final endedAt = endedRaw is String
+        ? DateTime.tryParse(endedRaw)?.toLocal()
+        : null;
+
+    final summaryRaw = json['summary'];
+    final summary = summaryRaw is String ? summaryRaw : null;
+
     return JourneyDto(
       id: json['id'] as int,
       collaboratorId: json['collaborator_id'] as int,
       startedAt: DateTime.parse(json['started_at'] as String).toLocal(),
+      endedAt: endedAt,
+      duration: _durationFromJson(json['duration_seconds']),
+      summary: summary,
       plannedActivities: activities,
       unplannedActivities: unplanned,
       status: JourneyStatus.fromApi(json['status'] as String),
@@ -59,6 +91,9 @@ class JourneyDto {
       id: id,
       collaboratorId: collaboratorId,
       startedAt: startedAt,
+      endedAt: endedAt,
+      duration: duration,
+      summary: summary,
       plannedActivities: plannedActivities
           .map((dto) => dto.toEntity())
           .toList(),

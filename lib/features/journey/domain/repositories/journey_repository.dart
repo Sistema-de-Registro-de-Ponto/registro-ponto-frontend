@@ -8,6 +8,8 @@ abstract class JourneyRepository {
 
   Future<Result<Journey, String>> startJourney();
 
+  Future<Result<Journey, String>> endJourney({required String summary});
+
   Future<Result<JourneyPlannedActivity, String>> updatePlannedActivityChecked({
     required int journeyPlannedActivityId,
     required bool checked,

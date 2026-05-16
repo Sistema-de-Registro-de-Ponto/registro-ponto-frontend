@@ -237,4 +237,61 @@ void main() {
       expect(result, const Failure<Journey, String>('Jornada já em andamento'));
     });
   });
+
+  group('endJourney', () {
+    final endedAt = DateTime.parse('2026-05-15T17:30:00-03:00').toLocal();
+    final completedUpdatedAt =
+        DateTime.parse('2026-05-15T17:30:01-03:00').toLocal();
+
+    test('em sucesso devolve Success com a jornada encerrada', () async {
+      final completedDto = JourneyDto(
+        id: 10,
+        collaboratorId: 4,
+        startedAt: startedAt,
+        endedAt: endedAt,
+        duration: const Duration(hours: 8),
+        summary: 'Dia produtivo.',
+        plannedActivities: dto.plannedActivities,
+        status: JourneyStatus.completed,
+        createdAt: createdAt,
+        updatedAt: completedUpdatedAt,
+      );
+      final completedJourney = Journey(
+        id: 10,
+        collaboratorId: 4,
+        startedAt: startedAt,
+        endedAt: endedAt,
+        duration: const Duration(hours: 8),
+        summary: 'Dia produtivo.',
+        plannedActivities: journey.plannedActivities,
+        status: JourneyStatus.completed,
+        createdAt: createdAt,
+        updatedAt: completedUpdatedAt,
+      );
+
+      when(
+        () => remote.endCurrentJourney(summary: 'Dia produtivo.'),
+      ).thenAnswer((_) async => completedDto);
+
+      final result = await repository.endJourney(summary: 'Dia produtivo.');
+
+      expect(result, Success<Journey, String>(completedJourney));
+      verify(
+        () => remote.endCurrentJourney(summary: 'Dia produtivo.'),
+      ).called(1);
+    });
+
+    test('em ApiException devolve Failure com a mensagem', () async {
+      when(
+        () => remote.endCurrentJourney(summary: 'Resumo'),
+      ).thenThrow(ApiException('Jornada não está em andamento'));
+
+      final result = await repository.endJourney(summary: 'Resumo');
+
+      expect(
+        result,
+        const Failure<Journey, String>('Jornada não está em andamento'),
+      );
+    });
+  });
 }

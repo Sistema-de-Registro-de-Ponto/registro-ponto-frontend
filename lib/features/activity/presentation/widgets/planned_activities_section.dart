@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:registro_ponto_frontend/shared/app_confirm_dialog.dart';
 import 'package:registro_ponto_frontend/shared/app_error_banner.dart';
 import 'package:registro_ponto_frontend/shared/app_inform_activity.dart';
 import 'package:registro_ponto_frontend/shared/app_pending_activity_item.dart';
@@ -23,6 +24,25 @@ class _PlannedActivitiesSectionState
   void dispose() {
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _onDeletePlannedActivity(
+    ActivityViewModel viewModel,
+    int id,
+    String description,
+  ) async {
+    final confirmed =
+        await AppConfirmDialog.show(
+          context,
+          title: 'Remover atividade?',
+          message: 'Deseja remover a atividade planejada "$description"?',
+          confirmLabel: 'Remover',
+          isDestructive: true,
+        ) ??
+        false;
+    if (!confirmed || !mounted) return;
+
+    await viewModel.deletePlannedActivity(id);
   }
 
   @override
@@ -75,7 +95,8 @@ class _PlannedActivitiesSectionState
           isEnabled: !state.isLoading,
           title: item.description,
           description: item.timeLabel,
-          onDelete: () => viewModel.deletePlannedActivity(item.id),
+          onDelete: () =>
+              _onDeletePlannedActivity(viewModel, item.id, item.description),
         ),
       ),
     ];

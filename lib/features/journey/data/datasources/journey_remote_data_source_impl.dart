@@ -32,7 +32,25 @@ class JourneyRemoteDataSourceImpl implements JourneyRemoteDataSource {
   @override
   Future<JourneyDto> startJourney() async {
     try {
-      final response = await _dio.post<Map<String, dynamic>>(_journeysPath);
+      final response = await _dio.post<Map<String, dynamic>>(
+        '$_journeysPath/start',
+      );
+      final data = response.data;
+      if (data == null) throw ApiException();
+
+      return JourneyDto.fromResponseJson(data);
+    } on DioException catch (e) {
+      throw e.mapDioException();
+    }
+  }
+
+  @override
+  Future<JourneyDto> endCurrentJourney({required String summary}) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '$_journeysPath/current/end',
+        data: <String, dynamic>{'summary': summary},
+      );
       final data = response.data;
       if (data == null) throw ApiException();
 

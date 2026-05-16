@@ -17,7 +17,7 @@ Dio dioClient(Ref ref) {
       baseUrl: config.apiBaseUrl,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 15),
-      sendTimeout: const Duration(seconds: 10),
+      sendTimeout: kIsWeb ? null : const Duration(seconds: 10),
       contentType: 'application/json',
       responseType: ResponseType.json,
     ),

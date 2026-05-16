@@ -39,6 +39,18 @@ class JourneyRepositoryImpl implements JourneyRepository {
   }
 
   @override
+  Future<Result<Journey, String>> endJourney({required String summary}) async {
+    try {
+      final dto = await _remote.endCurrentJourney(summary: summary);
+      return Success(dto.toEntity());
+    } on ApiException catch (e) {
+      return Failure(e.message);
+    } catch (e) {
+      return Failure(e.toErrorString());
+    }
+  }
+
+  @override
   Future<Result<JourneyPlannedActivity, String>> updatePlannedActivityChecked({
     required int journeyPlannedActivityId,
     required bool checked,

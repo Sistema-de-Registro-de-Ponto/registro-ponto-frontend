@@ -7,6 +7,8 @@ abstract class JourneyRemoteDataSource {
 
   Future<JourneyDto> startJourney();
 
+  Future<JourneyDto> endCurrentJourney({required String summary});
+
   Future<JourneyPlannedActivityDto> updatePlannedActivityChecked({
     required int id,
     required bool checked,

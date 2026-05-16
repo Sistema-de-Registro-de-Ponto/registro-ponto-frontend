@@ -44,4 +44,40 @@ void main() {
     expect(merged.plannedActivities.first.checked, isTrue);
     expect(merged.plannedActivities.last.checked, isTrue);
   });
+
+  test('withUpdatedPlannedActivity preserva endedAt, duration e summary', () {
+    final endedAt = DateTime.parse('2026-05-15T17:30:00-03:00').toLocal();
+    final journey = Journey(
+      id: 10,
+      collaboratorId: 4,
+      startedAt: startedAt,
+      endedAt: endedAt,
+      duration: const Duration(hours: 8),
+      summary: 'Resumo',
+      plannedActivities: const [
+        JourneyPlannedActivity(
+          id: 1,
+          plannedActivityId: 7,
+          description: 'A',
+          checked: true,
+        ),
+      ],
+      status: JourneyStatus.completed,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+
+    final merged = journey.withUpdatedPlannedActivity(
+      const JourneyPlannedActivity(
+        id: 1,
+        plannedActivityId: 7,
+        description: 'A',
+        checked: false,
+      ),
+    );
+
+    expect(merged.endedAt, endedAt);
+    expect(merged.duration, const Duration(hours: 8));
+    expect(merged.summary, 'Resumo');
+  });
 }

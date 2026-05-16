@@ -58,7 +58,20 @@ flutter analyze
 - **Perfil:** `GET /v1/collaborator` com header `Authorization`. JSON esperado: `{ "user_id": <int>, "first_name": "<string>" }`. `CollaboratorRepository.fetchProfile()` devolve `Result<CollaboratorProfile, String>`.
 - **Estado / UI:** `collaboratorProfileViewModelProvider` carrega o perfil no `build()`; shell usa `AppLoading` / `AppError` (retry com `ref.invalidate(collaboratorProfileViewModelProvider)`) / `CollaboratorShellLoaded` — abas Dashboard, Histórico e Perfil (`IndexedStack`; dashboard em `CollaboratorDashboardBody`; resto `AppDeveloping` por agora), **Sair** no `AppProfileMenu` via `AuthSessionController`. Em falha na API, o view model pode expor placeholder (`userId: 0`, `firstName: 'Desconhecido'`). Código em `lib/features/collaborator/`.
 - **Locale:** datas e UI em `pt_BR` (`main.dart`, `lib/app/app.dart`).
-- **Jornada (API):** `PUT /v1/journeys/activities/planned/{id}` com corpo `{ "is_checked": <bool> }`; respostas de jornada usam `journey_planned_activities` e, em cada item, `is_checked`. `GET /v1/journeys/current` inclui `unplanned_activities` (lista; pode ser vazia). Atividades não planejadas: `POST /v1/journeys/{id}/activities/unplanned/` com `{ "description": "<string>" }` (resposta com `id`, `journey_id`, `description`, `created_at` ou `create_at`) e `DELETE /v1/journeys/activities/unplanned/{id}`. No dashboard, `UnplannedActivitiesSection` reutiliza `AppInformActivity`; o utilizador só pode adicionar ou remover enquanto a jornada estiver `in_progress` (com `completed`, a lista permanece visível em modo leitura).
+- **Jornada (API):**
+  - **Iniciar:** `POST /v1/journeys/start` — resposta com a jornada na raiz ou em `{ "journey": { ... } }` (`JourneyDto.fromResponseJson`).
+  - **Em andamento:** `GET /v1/journeys/current` — devolve a jornada `in_progress` ou `404` quando não há jornada ativa.
+  - **Encerrar:** `POST /v1/journeys/current/end` com `{ "summary": "<string>" }` — resposta é o objeto da jornada na **raiz** (não aninhado em `journey`). Apenas jornadas `in_progress` podem ser encerradas; após `completed`, o backend define `ended_at`, `duration_seconds` (segundos) e persiste o resumo.
+  - **Checklist da jornada:** `PUT /v1/journeys/activities/planned/{id}` com `{ "is_checked": <bool> }`. Itens em `journey_planned_activities` com `is_checked`.
+  - **Não planejadas:** `POST /v1/journeys/{id}/activities/unplanned/` com `{ "description": "<string>" }`; `DELETE /v1/journeys/activities/unplanned/{id}`.
+  - **Campos opcionais na jornada encerrada:** `ended_at`, `duration_seconds`, `summary`.
+- **Jornada (UI no dashboard):**
+  - `JourneySection` carrega a jornada ao montar; **iniciar** e **encerrar** pedem confirmação (`AppConfirmDialog`). O encerramento abre `JourneySummaryDialog` (resumo obrigatório) e, em sucesso, `AppConfirmDialog.showAcknowledgement` confirma o encerramento.
+  - Após encerrar com sucesso, o estado volta ao modo **pronto para nova jornada** (`journey` limpa): card em aguardo com **Iniciar jornada**, `PlannedActivitiesSection` visível e sem painel de não planejadas nem checklist da jornada.
+  - Checklist de atividades planejadas da jornada (`AppCheckList`) visível **somente** com jornada `in_progress`.
+  - `UnplannedActivitiesSection` só aparece com jornada `in_progress`; remoções pedem confirmação.
+  - `PlannedActivitiesSection` (atividades do dia, feature `activity`) fica oculta com jornada `in_progress`; remoções pedem confirmação.
+  - Após encerrar, mutações na jornada (marcar checklist, adicionar/remover não planejadas) são bloqueadas no `JourneyViewModel`.
 
 ### Credenciais de teste
 

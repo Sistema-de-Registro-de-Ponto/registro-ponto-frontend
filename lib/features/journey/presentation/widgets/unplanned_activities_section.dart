@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:registro_ponto_frontend/core/extensions/datetime_extensions.dart';
+import 'package:registro_ponto_frontend/shared/app_confirm_dialog.dart';
 import 'package:registro_ponto_frontend/shared/app_inform_activity.dart';
 import 'package:registro_ponto_frontend/shared/app_pending_activity_item.dart';
 
@@ -23,6 +24,25 @@ class _UnplannedActivitiesSectionState
   void dispose() {
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _onDeleteUnplannedActivity(
+    JourneyViewModel viewModel,
+    int id,
+    String description,
+  ) async {
+    final confirmed =
+        await AppConfirmDialog.show(
+          context,
+          title: 'Remover atividade?',
+          message: 'Deseja remover a atividade não planejada "$description"?',
+          confirmLabel: 'Remover',
+          isDestructive: true,
+        ) ??
+        false;
+    if (!confirmed || !mounted) return;
+
+    await viewModel.deleteUnplannedActivity(id);
   }
 
   @override
@@ -82,7 +102,8 @@ class _UnplannedActivitiesSectionState
           isEnabled: interactionEnabled && !state.isUnplannedMutationBusy,
           title: item.description,
           description: item.createdAt.formattedHourShort,
-          onDelete: () => viewModel.deleteUnplannedActivity(item.id),
+          onDelete: () =>
+              _onDeleteUnplannedActivity(viewModel, item.id, item.description),
         ),
       ),
     ];
