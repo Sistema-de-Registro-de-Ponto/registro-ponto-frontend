@@ -25,6 +25,22 @@ extension DateTimeExtensions on DateTime {
     return DateFormat('HH:mm').format(local);
   }
 
+  String get formattedApiDate => DateFormat('yyyy-MM-dd').format(this);
+
+  String get formattedShortDate {
+    final local = isUtc ? toLocal() : this;
+    return DateFormat('dd/MM/yyyy').format(local);
+  }
+
+  String get formattedWeekday {
+    final local = isUtc ? toLocal() : this;
+    final raw = DateFormat('EEEE', 'pt_BR').format(local);
+
+    if (raw.isEmpty) return raw;
+
+    return raw[0].toUpperCase() + raw.substring(1);
+  }
+
   Duration elapsedSince(DateTime from) {
     final start = from.isUtc ? from.toLocal() : from;
     final end = isUtc ? toLocal() : this;
@@ -33,6 +49,14 @@ extension DateTimeExtensions on DateTime {
 }
 
 extension DurationExtensions on Duration {
+  String get formattedHm {
+    final hours = inHours;
+    final minutes = inMinutes.remainder(60);
+    final h = hours.toString().padLeft(2, '0');
+    final m = minutes.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
+
   String get formattedHms {
     final hours = inHours;
     final minutes = inMinutes.remainder(60);

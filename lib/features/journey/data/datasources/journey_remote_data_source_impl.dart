@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 
+import '../../../../core/extensions/datetime_extensions.dart';
 import '../../../../core/network/api_exception.dart';
 import '../models/journey_dto.dart';
+import '../models/journey_page_dto.dart';
 import '../models/journey_planned_activity_dto.dart';
 import '../models/journey_unplanned_activity_dto.dart';
 import 'journey_remote_data_source.dart';
@@ -12,6 +14,32 @@ class JourneyRemoteDataSourceImpl implements JourneyRemoteDataSource {
   final Dio _dio;
 
   const JourneyRemoteDataSourceImpl(this._dio);
+
+  @override
+  Future<JourneyPageDto> fetchJourneys({
+    required DateTime startDate,
+    required DateTime endDate,
+    int page = 0,
+    int pageSize = 20,
+  }) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        _journeysPath,
+        queryParameters: <String, dynamic>{
+          'start_date': startDate.formattedApiDate,
+          'end_date': endDate.formattedApiDate,
+          'page': page,
+          'size': pageSize,
+        },
+      );
+      final data = response.data;
+      if (data == null) throw ApiException();
+
+      return JourneyPageDto.fromJson(data);
+    } on DioException catch (e) {
+      throw e.mapDioException();
+    }
+  }
 
   @override
   Future<JourneyDto?> fetchInProgressJourney() async {

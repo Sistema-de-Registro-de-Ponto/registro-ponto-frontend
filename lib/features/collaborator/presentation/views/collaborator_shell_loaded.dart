@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:registro_ponto_frontend/features/collaborator/domain/entities/collaborator_profile.dart';
 import 'package:registro_ponto_frontend/features/collaborator/presentation/views/collaborator_dashboard_body.dart';
 import 'package:registro_ponto_frontend/features/collaborator/presentation/widgets/nav_tabs.dart';
+import 'package:registro_ponto_frontend/features/journey/presentation/view_models/journey_history_view_model.dart';
+import 'package:registro_ponto_frontend/features/journey/presentation/views/journey_history_body.dart';
 import 'package:registro_ponto_frontend/shared/app_brand_logo.dart';
 import 'package:registro_ponto_frontend/shared/app_developing.dart';
 import 'package:registro_ponto_frontend/shared/app_profile_menu.dart';
@@ -18,9 +20,19 @@ class CollaboratorShellLoaded extends ConsumerStatefulWidget {
 }
 
 class _CollaboratorShellLoadedState extends ConsumerState<CollaboratorShellLoaded> {
+  static const _historyTabIndex = 1;
+
   int _tabIndex = 0;
 
   CollaboratorProfile get profile => widget.profile;
+
+  void _onTabChanged(int index) {
+    setState(() => _tabIndex = index);
+
+    if (index == _historyTabIndex) {
+      ref.read(journeyHistoryViewModelProvider.notifier).loadJourneys();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +63,7 @@ class _CollaboratorShellLoadedState extends ConsumerState<CollaboratorShellLoade
                         AppProfileMenu(profile: profile),
                       ],
                     ),
-                    NavTabs(index: _tabIndex, onChanged: (i) => setState(() => _tabIndex = i)),
+                    NavTabs(index: _tabIndex, onChanged: _onTabChanged),
                   ],
                 ),
                 desktop: Row(
@@ -59,7 +71,7 @@ class _CollaboratorShellLoadedState extends ConsumerState<CollaboratorShellLoade
                     const AppBrandLogo(compact: true),
                     Expanded(
                       child: Center(
-                        child: NavTabs(index: _tabIndex, onChanged: (i) => setState(() => _tabIndex = i)),
+                        child: NavTabs(index: _tabIndex, onChanged: _onTabChanged),
                       ),
                     ),
                     AppProfileMenu(profile: profile),
@@ -73,7 +85,7 @@ class _CollaboratorShellLoadedState extends ConsumerState<CollaboratorShellLoade
               index: _tabIndex,
               children: [
                 CollaboratorDashboardBody(profile: profile),
-                const AppDeveloping(),
+                const JourneyHistoryBody(),
                 const AppDeveloping(),
               ],
             ),

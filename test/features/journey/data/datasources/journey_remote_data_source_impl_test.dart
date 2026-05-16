@@ -34,6 +34,89 @@ void main() {
     dataSource = JourneyRemoteDataSourceImpl(dio);
   });
 
+  group('fetchJourneys', () {
+    final pageJson = <String, dynamic>{
+      'content': [completedJson],
+      'last': false,
+      'first': true,
+      'size': 20,
+      'number': 0,
+    };
+
+    test(
+      'chama GET /v1/journeys com start_date, end_date, page e size',
+      () async {
+        when(
+          () => dio.get<Map<String, dynamic>>(
+            '/v1/journeys',
+            queryParameters: <String, dynamic>{
+              'start_date': '2025-05-01',
+              'end_date': '2025-05-14',
+              'page': 0,
+              'size': 20,
+            },
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            data: pageJson,
+            requestOptions: RequestOptions(path: '/v1/journeys'),
+          ),
+        );
+
+        final page = await dataSource.fetchJourneys(
+          startDate: DateTime(2025, 5, 1),
+          endDate: DateTime(2025, 5, 14),
+        );
+
+        expect(page.journeys, hasLength(1));
+        expect(page.journeys.first.status, JourneyStatus.completed);
+        expect(page.last, isFalse);
+        verify(
+          () => dio.get<Map<String, dynamic>>(
+            '/v1/journeys',
+            queryParameters: <String, dynamic>{
+              'start_date': '2025-05-01',
+              'end_date': '2025-05-14',
+              'page': 0,
+              'size': 20,
+            },
+          ),
+        ).called(1);
+      },
+    );
+
+    test('repassa page incrementada para carregar mais', () async {
+      when(
+        () => dio.get<Map<String, dynamic>>(
+          '/v1/journeys',
+          queryParameters: <String, dynamic>{
+            'start_date': '2025-05-01',
+            'end_date': '2025-05-14',
+            'page': 1,
+            'size': 20,
+          },
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          data: <String, dynamic>{
+            'content': <Map<String, dynamic>>[],
+            'last': true,
+          },
+          requestOptions: RequestOptions(path: '/v1/journeys'),
+        ),
+      );
+
+      final page = await dataSource.fetchJourneys(
+        startDate: DateTime(2025, 5, 1),
+        endDate: DateTime(2025, 5, 14),
+        page: 1,
+      );
+
+      expect(page.journeys, isEmpty);
+      expect(page.last, isTrue);
+    });
+  });
+
   group('startJourney', () {
     test('chama POST /v1/journeys/start e mapeia resposta na raiz', () async {
       when(

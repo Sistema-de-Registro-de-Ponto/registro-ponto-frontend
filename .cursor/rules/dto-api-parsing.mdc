@@ -1,0 +1,23 @@
+---
+description: DTOs e parsing de respostas da API — confiar no contrato, falhar cedo, nunca mascarar erros.
+alwaysApply: true
+---
+
+# DTOs e respostas da API
+
+- **Não criar DTOs defensivos:** confiar no contrato documentado do backend. Em `fromJson`, mapear com casts diretos (`as int`, `as String`, `as List`, `as bool`, etc.), no mesmo estilo de `CollaboratorProfileDto` e `PlannedActivityDto`.
+- **Nunca silenciar erros da API:** não usar fallbacks que escondem contrato quebrado — por exemplo lista vazia quando `content` não é lista, `last: true` quando `last` falta, `whereType` para ignorar itens inválidos, ou `??` que substitui dados obrigatórios por default “seguro”.
+- **Falhar cedo:** resposta fora do contrato deve lançar na desserialização ou propagar `ApiException`/erro até repositório e UI (mensagem ao utilizador, retry), não degradar para estado “vazio” como se a chamada tivesse sido bem-sucedida.
+- **Exceção conhecida no projeto:** formatos realmente opcionais no contrato (ex.: `ended_at`, `duration_seconds` em `JourneyDto`) podem tratar `null` — isso não é silenciar erro, é campo opcional documentado.
+
+```dart
+// ❌ Evitar — mascara API incorreta
+final last = json['last'] is bool ? json['last'] as bool : true;
+final items = contentJson is List ? ... : <JourneyDto>[];
+
+// ✅ Preferir — contrato explícito
+journeys: (json['content'] as List)
+    .map((item) => JourneyDto.fromJson(item as Map<String, dynamic>))
+    .toList(),
+last: json['last'] as bool,
+```

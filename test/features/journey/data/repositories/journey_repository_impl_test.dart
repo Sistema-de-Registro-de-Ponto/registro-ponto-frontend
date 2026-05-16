@@ -4,10 +4,12 @@ import 'package:registro_ponto_frontend/core/network/api_exception.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/journey/data/datasources/journey_remote_data_source.dart';
 import 'package:registro_ponto_frontend/features/journey/data/models/journey_dto.dart';
+import 'package:registro_ponto_frontend/features/journey/data/models/journey_page_dto.dart';
 import 'package:registro_ponto_frontend/features/journey/data/models/journey_planned_activity_dto.dart';
 import 'package:registro_ponto_frontend/features/journey/data/models/journey_unplanned_activity_dto.dart';
 import 'package:registro_ponto_frontend/features/journey/data/repositories/journey_repository_impl.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey.dart';
+import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_page.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_planned_activity.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_status.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_unplanned_activity.dart';
@@ -60,6 +62,55 @@ void main() {
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
+  });
+
+  group('fetchJourneys', () {
+    final startDate = DateTime(2025, 5, 1);
+    final endDate = DateTime(2025, 5, 14);
+
+    test('em sucesso devolve Success com JourneyPage', () async {
+      final pageDto = JourneyPageDto(journeys: [dto], last: false);
+
+      when(
+        () => remote.fetchJourneys(
+          startDate: startDate,
+          endDate: endDate,
+          page: 0,
+          pageSize: 20,
+        ),
+      ).thenAnswer((_) async => pageDto);
+
+      final result = await repository.fetchJourneys(
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      expect(
+        result,
+        Success<JourneyPage, String>(JourneyPage(journeys: [journey], last: false)),
+      );
+    });
+
+    test('em ApiException devolve Failure com a mensagem', () async {
+      when(
+        () => remote.fetchJourneys(
+          startDate: startDate,
+          endDate: endDate,
+          page: 0,
+          pageSize: 20,
+        ),
+      ).thenThrow(ApiException('Período inválido'));
+
+      final result = await repository.fetchJourneys(
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      expect(
+        result,
+        const Failure<JourneyPage, String>('Período inválido'),
+      );
+    });
   });
 
   group('fetchInProgressJourney', () {

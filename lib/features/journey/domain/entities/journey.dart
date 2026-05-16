@@ -34,6 +34,40 @@ class Journey extends Equatable {
 
   String get startedHourLabel => startedAt.formattedHourShort;
 
+  String get historyDateLabel => startedAt.formattedShortDate;
+
+  String get historyWeekdayLabel => startedAt.formattedWeekday;
+
+  String get historyEntryLabel => startedHourLabel;
+
+  String get historyExitLabel => endedAt?.formattedHourShort ?? '--:--';
+
+  bool get isHistoryInProgress => status == JourneyStatus.inProgress;
+
+  String get historyStatusLabel => switch (status) {
+    JourneyStatus.inProgress => 'Em andamento',
+    JourneyStatus.completed => 'Finalizada',
+    JourneyStatus.waiting => 'Aguardando',
+  };
+
+  int? get adherencePercent {
+    if (plannedActivities.isEmpty) return null;
+
+    final checkedCount = plannedActivities
+        .where((activity) => activity.checked)
+        .length;
+
+    return ((checkedCount / plannedActivities.length) * 100).round();
+  }
+
+  String get adherenceLabel =>
+      adherencePercent == null ? '-' : '$adherencePercent%';
+
+  Duration displayDuration(DateTime at) =>
+      duration ?? at.elapsedSince(startedAt);
+
+  String historyTotalHoursLabel(DateTime at) => displayDuration(at).formattedHm;
+
   Journey withUpdatedPlannedActivity(JourneyPlannedActivity updated) {
     return Journey(
       id: id,

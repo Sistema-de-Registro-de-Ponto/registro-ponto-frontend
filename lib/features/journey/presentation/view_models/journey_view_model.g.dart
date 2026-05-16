@@ -41,7 +41,7 @@ final class JourneyViewModelProvider
   }
 }
 
-String _$journeyViewModelHash() => r'3aaa060de78cfedbd0eb94cbb29b650e274562d0';
+String _$journeyViewModelHash() => r'24f3217a67e2688ac44f19ec3e4362855c370491';
 
 abstract class _$JourneyViewModel extends $Notifier<JourneyState> {
   JourneyState build();

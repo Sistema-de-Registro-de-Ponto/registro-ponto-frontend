@@ -1,8 +1,16 @@
 import '../models/journey_dto.dart';
+import '../models/journey_page_dto.dart';
 import '../models/journey_planned_activity_dto.dart';
 import '../models/journey_unplanned_activity_dto.dart';
 
 abstract class JourneyRemoteDataSource {
+  Future<JourneyPageDto> fetchJourneys({
+    required DateTime startDate,
+    required DateTime endDate,
+    int page = 0,
+    int pageSize = 20,
+  });
+
   Future<JourneyDto?> fetchInProgressJourney();
 
   Future<JourneyDto> startJourney();
