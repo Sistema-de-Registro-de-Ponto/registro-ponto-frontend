@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey.dart';
 
+import 'journey_detail_dialog.dart';
+
 class JourneyHistoryTable extends StatelessWidget {
   static const _adherenceHighThreshold = 80;
 
@@ -52,6 +54,7 @@ class JourneyHistoryTable extends StatelessWidget {
                 3: FlexColumnWidth(1.2),
                 4: FlexColumnWidth(1),
                 5: FlexColumnWidth(1.2),
+                6: FixedColumnWidth(48),
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
@@ -79,6 +82,7 @@ class JourneyHistoryTable extends StatelessWidget {
         _HeaderCell('TOTAL DE HORAS'),
         _HeaderCell('ADERÊNCIA', textAlign: TextAlign.center),
         _HeaderCell('STATUS', textAlign: TextAlign.center),
+        const SizedBox.shrink(),
       ],
     );
   }
@@ -106,7 +110,34 @@ class JourneyHistoryTable extends StatelessWidget {
             isInProgress: journey.isHistoryInProgress,
           ),
         ),
+        _ViewDetailsCell(journey: journey, referenceTime: referenceTime),
       ],
+    );
+  }
+}
+
+class _ViewDetailsCell extends StatelessWidget {
+  final Journey journey;
+  final DateTime referenceTime;
+
+  const _ViewDetailsCell({
+    required this.journey,
+    required this.referenceTime,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: IconButton(
+        onPressed: () => JourneyDetailDialog.show(
+          context,
+          journey: journey,
+          referenceTime: referenceTime,
+        ),
+        tooltip: 'Ver detalhes',
+        icon: const Icon(Icons.visibility_outlined),
+      ),
     );
   }
 }

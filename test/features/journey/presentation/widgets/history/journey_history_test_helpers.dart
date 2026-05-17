@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey.dart';
+import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_planned_activity.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_status.dart';
+import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_unplanned_activity.dart';
 
 Future<void> initJourneyHistoryTests() async {
   await initializeDateFormatting('pt_BR');
@@ -25,6 +27,9 @@ Journey buildHistoryJourney({
   JourneyStatus status = JourneyStatus.completed,
   DateTime? endedAt,
   Duration? duration,
+  String? summary,
+  List<JourneyPlannedActivity> plannedActivities = const [],
+  List<JourneyUnplannedActivity> unplannedActivities = const [],
 }) {
   final startedAt = DateTime(2025, 5, 14, 8, 3);
   final timestamps = DateTime(2025, 5, 14, 8, 3, 1);
@@ -35,7 +40,9 @@ Journey buildHistoryJourney({
     startedAt: startedAt,
     endedAt: endedAt,
     duration: duration,
-    plannedActivities: const [],
+    summary: summary,
+    plannedActivities: plannedActivities,
+    unplannedActivities: unplannedActivities,
     status: status,
     createdAt: timestamps,
     updatedAt: timestamps,
