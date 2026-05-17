@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:registro_ponto_frontend/app/theme.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/view_models/auth_session_controller.dart';
-import 'package:registro_ponto_frontend/features/collaborator/domain/entities/collaborator_profile.dart';
-
 class AppProfileMenu extends ConsumerWidget {
-  final CollaboratorProfile profile;
+  final String firstName;
+  final String avatarInitial;
+  final String roleLabel;
 
-  const AppProfileMenu({super.key, required this.profile});
+  const AppProfileMenu({
+    super.key,
+    required this.firstName,
+    required this.avatarInitial,
+    required this.roleLabel,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,16 +37,16 @@ class AppProfileMenu extends ConsumerWidget {
           CircleAvatar(
             backgroundColor: kAppBrandBlue,
             foregroundColor: Colors.white,
-            child: Text(profile.firstLetterOfName, style: const TextStyle(fontWeight: FontWeight.w600)),
+            child: Text(avatarInitial, style: const TextStyle(fontWeight: FontWeight.w600)),
           ),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(profile.firstName, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+              Text(firstName, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
               Text(
-                'Colaborador',
+                roleLabel,
                 style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
               ),
             ],

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:registro_ponto_frontend/core/extensions/datetime_extensions.dart';
+import 'package:registro_ponto_frontend/shared/app_responsive.dart';
 
-class JourneyHistoryPeriodField extends StatelessWidget {
+class AppPeriodField extends StatelessWidget {
   final DateTime startDate;
   final DateTime endDate;
   final ValueChanged<DateTimeRange> onPeriodChanged;
 
-  const JourneyHistoryPeriodField({
+  const AppPeriodField({
     super.key,
     required this.startDate,
     required this.endDate,
@@ -55,9 +56,26 @@ class JourneyHistoryPeriodField extends StatelessWidget {
     final picked = await showDateRangePicker(
       context: context,
       locale: const Locale('pt', 'BR'),
+      helpText: 'Selecione o intervalo',
       initialDateRange: DateTimeRange(start: startDate, end: endDate),
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
+      initialEntryMode: DatePickerEntryMode.calendar,
+      builder: (context, child) {
+        final content = Theme(
+          data: Theme.of(context),
+          child: child ?? const SizedBox.shrink(),
+        );
+
+        return AppResponsive(
+          desktopBreakpoint: 600,
+          mobile: content,
+          desktop: MediaQuery(
+            data: MediaQuery.of(context).copyWith(size: Size(400, 520)),
+            child: content,
+          ),
+        );
+      },
     );
 
     if (picked == null) return;

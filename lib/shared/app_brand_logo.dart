@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class AppBrandLogo extends StatelessWidget {
   final bool compact;
   final double? iconSize;
+  final bool showTitle;
 
-  const AppBrandLogo({super.key, this.compact = false, this.iconSize});
+  const AppBrandLogo({super.key, this.compact = false, this.iconSize, this.showTitle = true});
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +28,17 @@ class AppBrandLogo extends StatelessWidget {
               errorBuilder: (_, _, _) => _FallbackIcon(size: size, color: theme.colorScheme.primary),
             ),
           ),
-          SizedBox(width: compact ? 10 : 12),
-          Text(
-            'Registro de Ponto',
-            style: titleStyle?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: theme.colorScheme.onSurface,
-              letterSpacing: -0.25,
+          if (showTitle) ...[
+            SizedBox(width: compact ? 10 : 12),
+            Text(
+              'Registro de Ponto',
+              style: titleStyle?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: theme.colorScheme.onSurface,
+                letterSpacing: -0.25,
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

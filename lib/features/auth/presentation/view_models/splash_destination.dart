@@ -1,4 +1,5 @@
 enum SplashDestination {
-  home,
+  collaborator,
+  manager,
   login,
 }

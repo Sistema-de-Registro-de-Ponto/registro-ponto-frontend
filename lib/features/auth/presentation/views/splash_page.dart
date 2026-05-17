@@ -18,7 +18,8 @@ class SplashPage extends ConsumerWidget {
         if (!context.mounted) return;
 
         final location = switch (destination) {
-          SplashDestination.home => Routes.home,
+          SplashDestination.collaborator => Routes.home,
+          SplashDestination.manager => Routes.management,
           SplashDestination.login => Routes.login,
         };
         context.go(location);

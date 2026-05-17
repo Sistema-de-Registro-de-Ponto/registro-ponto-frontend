@@ -37,6 +37,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final session = AuthSession(
         token: loginDto.token,
         tokenType: loginDto.tokenType,
+        role: loginDto.role,
       );
 
       await _local.save(PersistedAuthSessionDto.fromEntity(session));

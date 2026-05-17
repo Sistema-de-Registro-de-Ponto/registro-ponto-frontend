@@ -8,6 +8,7 @@ import 'package:registro_ponto_frontend/features/auth/data/models/login_response
 import 'package:registro_ponto_frontend/features/auth/data/models/persisted_auth_session_dto.dart';
 import 'package:registro_ponto_frontend/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/auth_session.dart';
+import 'package:registro_ponto_frontend/features/auth/domain/entities/user_role.dart';
 
 class _MockAuthRemoteDataSource extends Mock implements AuthRemoteDataSource {}
 
@@ -25,11 +26,20 @@ void main() {
   const password = '12345678';
   const token = 'jwt.payload.signature';
   const tokenType = 'Bearer';
-  const loginDto = LoginResponseDto(token: token, tokenType: tokenType);
-  const expectedSession = AuthSession(token: token, tokenType: tokenType);
+  const loginDto = LoginResponseDto(
+    token: token,
+    tokenType: tokenType,
+    role: UserRole.collaborator,
+  );
+  const expectedSession = AuthSession(
+    token: token,
+    tokenType: tokenType,
+    role: UserRole.collaborator,
+  );
   const persistedDto = PersistedAuthSessionDto(
     token: token,
     tokenType: tokenType,
+    role: 'COLLABORATOR',
   );
 
   setUpAll(() {

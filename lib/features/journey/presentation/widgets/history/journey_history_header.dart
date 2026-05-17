@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:registro_ponto_frontend/shared/app_responsive.dart';
 
-import 'journey_history_period_field.dart';
+import '../../../../../shared/app_period_field.dart';
 
 class JourneyHistoryHeader extends StatelessWidget {
   final DateTime startDate;
@@ -26,7 +26,7 @@ class JourneyHistoryHeader extends StatelessWidget {
         spacing: 16,
         children: [
           _TitleBlock(theme: theme),
-          JourneyHistoryPeriodField(
+          AppPeriodField(
             startDate: startDate,
             endDate: endDate,
             onPeriodChanged: onPeriodChanged,
@@ -38,7 +38,7 @@ class JourneyHistoryHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _TitleBlock(theme: theme),
-          JourneyHistoryPeriodField(
+          AppPeriodField(
             startDate: startDate,
             endDate: endDate,
             onPeriodChanged: onPeriodChanged,

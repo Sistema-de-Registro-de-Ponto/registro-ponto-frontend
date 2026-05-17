@@ -60,7 +60,11 @@ class _CollaboratorShellLoadedState extends ConsumerState<CollaboratorShellLoade
                       children: [
                         AppBrandLogo(compact: true),
                         const Spacer(),
-                        AppProfileMenu(profile: profile),
+                        AppProfileMenu(
+                          firstName: profile.firstName,
+                          avatarInitial: profile.firstLetterOfName,
+                          roleLabel: 'Colaborador',
+                        ),
                       ],
                     ),
                     NavTabs(index: _tabIndex, onChanged: _onTabChanged),
@@ -74,7 +78,11 @@ class _CollaboratorShellLoadedState extends ConsumerState<CollaboratorShellLoade
                         child: NavTabs(index: _tabIndex, onChanged: _onTabChanged),
                       ),
                     ),
-                    AppProfileMenu(profile: profile),
+                    AppProfileMenu(
+                      firstName: profile.firstName,
+                      avatarInitial: profile.firstLetterOfName,
+                      roleLabel: 'Colaborador',
+                    ),
                   ],
                 ),
               ),

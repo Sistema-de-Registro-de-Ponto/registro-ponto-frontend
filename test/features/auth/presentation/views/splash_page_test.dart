@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:registro_ponto_frontend/app/routes.dart';
 import 'package:registro_ponto_frontend/features/auth/data/repositories/auth_repository_provider.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/auth_session.dart';
+import 'package:registro_ponto_frontend/features/auth/domain/entities/user_role.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/repositories/auth_repository.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/view_models/splash_min_display_duration.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/views/splash_page.dart';
@@ -33,6 +34,10 @@ Widget _harness({
       GoRoute(path: Routes.splash, builder: (_, _) => const SplashPage()),
       GoRoute(path: Routes.login, builder: (_, _) => const _ProbePage(label: 'login')),
       GoRoute(path: Routes.home, builder: (_, _) => const _ProbePage(label: 'home')),
+      GoRoute(
+        path: Routes.management,
+        builder: (_, _) => const _ProbePage(label: 'management'),
+      ),
     ],
   );
 
@@ -48,7 +53,16 @@ Widget _harness({
 void main() {
   late _MockAuthRepository repo;
 
-  const session = AuthSession(token: 't', tokenType: 'Bearer');
+  const collaboratorSession = AuthSession(
+    token: 't',
+    tokenType: 'Bearer',
+    role: UserRole.collaborator,
+  );
+  const managerSession = AuthSession(
+    token: 't',
+    tokenType: 'Bearer',
+    role: UserRole.manager,
+  );
 
   setUp(() {
     repo = _MockAuthRepository();
@@ -67,13 +81,22 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('navega para home quando há sessão ativa', (tester) async {
-    when(() => repo.loadPersistedSession()).thenAnswer((_) async => session);
+  testWidgets('navega para home quando há sessão COLLABORATOR', (tester) async {
+    when(() => repo.loadPersistedSession()).thenAnswer((_) async => collaboratorSession);
 
     await tester.pumpWidget(_harness(repo: repo, initialLocation: Routes.splash));
     await tester.pumpAndSettle();
 
     expect(find.text('home'), findsOneWidget);
+  });
+
+  testWidgets('navega para management quando há sessão MANAGER', (tester) async {
+    when(() => repo.loadPersistedSession()).thenAnswer((_) async => managerSession);
+
+    await tester.pumpWidget(_harness(repo: repo, initialLocation: Routes.splash));
+    await tester.pumpAndSettle();
+
+    expect(find.text('management'), findsOneWidget);
   });
 
   testWidgets('navega para login sem sessão', (tester) async {

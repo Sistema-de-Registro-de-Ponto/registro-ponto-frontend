@@ -2,10 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'auth_navigation.dart';
 import '../features/auth/presentation/view_models/auth_session_controller.dart';
 import '../features/auth/presentation/views/login_page.dart';
 import '../features/auth/presentation/views/splash_page.dart';
 import '../features/collaborator/presentation/views/collaborator_shell_page.dart';
+import '../features/manager/presentation/views/manager_shell_page.dart';
 import 'routes.dart';
 
 part 'router.g.dart';
@@ -30,7 +32,7 @@ GoRouter goRouter(Ref ref) {
       final goingToLogin = state.matchedLocation == Routes.login;
 
       if (!loggedIn && !goingToLogin) return Routes.login;
-      if (loggedIn && goingToLogin) return Routes.home;
+      if (loggedIn && goingToLogin) return asyncSession.value!.role.shellRoute;
       return null;
     },
     routes: [
@@ -43,6 +45,11 @@ GoRouter goRouter(Ref ref) {
         path: Routes.home,
         name: 'home',
         builder: (_, _) => const CollaboratorShellPage(),
+      ),
+      GoRoute(
+        path: Routes.management,
+        name: 'management',
+        builder: (_, _) => const ManagerShellPage(),
       ),
       GoRoute(
         path: Routes.login,

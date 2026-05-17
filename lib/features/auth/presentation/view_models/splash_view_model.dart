@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../domain/entities/user_role.dart';
 import 'auth_session_controller.dart';
 import 'splash_destination.dart';
 import 'splash_min_display_duration.dart';
@@ -21,7 +22,10 @@ class SplashViewModel extends _$SplashViewModel {
     final asyncSession = ref.read(authSessionControllerProvider);
 
     return switch (asyncSession) {
-      AsyncData(:final value) => value != null ? SplashDestination.home : SplashDestination.login,
+      AsyncData(:final value) when value != null => switch (value.role) {
+        UserRole.collaborator => SplashDestination.collaborator,
+        UserRole.manager => SplashDestination.manager,
+      },
       _ => SplashDestination.login,
     };
   }

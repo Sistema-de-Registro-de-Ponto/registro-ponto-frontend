@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/auth/data/repositories/auth_repository_provider.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/auth_session.dart';
+import 'package:registro_ponto_frontend/features/auth/domain/entities/user_role.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/repositories/auth_repository.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/views/login_page.dart';
 
@@ -60,7 +61,7 @@ void main() {
       () => repo.login(username: 'colaborador', password: '12345678'),
     ).thenAnswer(
       (_) async => const Success<AuthSession, String>(
-        AuthSession(token: 't', tokenType: 'Bearer'),
+        AuthSession(token: 't', tokenType: 'Bearer', role: UserRole.collaborator),
       ),
     );
 
@@ -105,7 +106,7 @@ void main() {
       (_) => Future.delayed(
         const Duration(milliseconds: 200),
         () => const Success<AuthSession, String>(
-          AuthSession(token: 't', tokenType: 'Bearer'),
+          AuthSession(token: 't', tokenType: 'Bearer', role: UserRole.collaborator),
         ),
       ),
     );

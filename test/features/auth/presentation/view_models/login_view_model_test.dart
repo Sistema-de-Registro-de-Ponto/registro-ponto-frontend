@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/auth/data/repositories/auth_repository_provider.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/entities/auth_session.dart';
+import 'package:registro_ponto_frontend/features/auth/domain/entities/user_role.dart';
 import 'package:registro_ponto_frontend/features/auth/domain/repositories/auth_repository.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/view_models/login_state.dart';
 import 'package:registro_ponto_frontend/features/auth/presentation/view_models/login_view_model.dart';
@@ -16,7 +17,7 @@ void main() {
 
   const username = 'colaborador';
   const password = '12345678';
-  const session = AuthSession(token: 't', tokenType: 'Bearer');
+  const session = AuthSession(token: 't', tokenType: 'Bearer', role: UserRole.collaborator);
 
   LoginViewModel notifier() => container.read(loginViewModelProvider.notifier);
   LoginState readState() => container.read(loginViewModelProvider);
