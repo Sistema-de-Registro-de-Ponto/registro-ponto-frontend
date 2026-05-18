@@ -74,7 +74,7 @@ void main() {
         ],
         'number': 0,
         'size': 10,
-        'total_elements': 1,
+        'numberOfElements': 1,
         'first': true,
         'last': true,
         'empty': false,
