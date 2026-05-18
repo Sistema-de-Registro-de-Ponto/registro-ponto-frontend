@@ -19,7 +19,7 @@ enum ManagerNavDestination {
   journeys(
     label: 'Jornadas',
     pageTitle: 'Jornadas',
-    pageSubtitle: 'Acompanhamento de jornadas',
+    pageSubtitle: 'Consulte e acompanhe as jornadas registradas.',
     icon: Icons.schedule_outlined,
     selectedIcon: Icons.schedule_rounded,
   ),

@@ -47,7 +47,7 @@ final class ManagerCollaboratorsViewModelProvider
 }
 
 String _$managerCollaboratorsViewModelHash() =>
-    r'06e998af5aeed068544203bd23909403c4eed8de';
+    r'4e9062d049193a9161dd880dfd8049bbd1edd50f';
 
 abstract class _$ManagerCollaboratorsViewModel
     extends $Notifier<ManagerCollaboratorsState> {

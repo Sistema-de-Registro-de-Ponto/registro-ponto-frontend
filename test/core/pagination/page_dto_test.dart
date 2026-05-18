@@ -9,7 +9,7 @@ void main() {
       ],
       'number': 0,
       'size': 10,
-      'numberOfElements': 25,
+      'totalElements': 25,
       'first': true,
       'last': false,
       'empty': false,

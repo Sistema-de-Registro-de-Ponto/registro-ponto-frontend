@@ -3,8 +3,11 @@ import 'package:dio/dio.dart';
 import '../../../../core/extensions/datetime_extensions.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/pagination/page_dto.dart';
+import 'package:registro_ponto_frontend/features/journey/data/models/journey_dto.dart';
+
 import '../models/manager_collaborator_detail_dto.dart';
 import '../models/manager_collaborator_dto.dart';
+import '../models/manager_journey_list_item_dto.dart';
 import '../models/manager_overview_dto.dart';
 import '../models/manager_profile_dto.dart';
 import 'manager_remote_data_source.dart';
@@ -76,6 +79,49 @@ class ManagerRemoteDataSourceImpl implements ManagerRemoteDataSource {
         '/v1/manager/collaborators/$id',
       );
       return ManagerCollaboratorDetailDto.fromJson(response.data!);
+    } on DioException catch (e) {
+      throw e.mapDioException();
+    }
+  }
+
+  @override
+  Future<PageDto<ManagerJourneyListItemDto>> fetchJourneys({
+    required int page,
+    required int pageSize,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? collaboratorName,
+  }) async {
+    try {
+      final queryParameters = <String, dynamic>{
+        'page': page,
+        'size': pageSize,
+        if (startDate != null) 'start_date': startDate.formattedApiDate,
+        if (endDate != null) 'end_date': endDate.formattedApiDate,
+        if (collaboratorName != null && collaboratorName.isNotEmpty)
+          'collaborator_name': collaboratorName,
+      };
+
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/v1/manager/journeys',
+        queryParameters: queryParameters,
+      );
+      return PageDto.fromJson(
+        response.data!,
+        ManagerJourneyListItemDto.fromJson,
+      );
+    } on DioException catch (e) {
+      throw e.mapDioException();
+    }
+  }
+
+  @override
+  Future<JourneyDto> fetchJourneyById(int id) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/v1/manager/journeys/$id',
+      );
+      return JourneyDto.fromJson(response.data!);
     } on DioException catch (e) {
       throw e.mapDioException();
     }

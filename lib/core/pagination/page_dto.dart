@@ -29,7 +29,7 @@ class PageDto<T> {
           .toList(),
       pageNumber: json['number'] as int,
       pageSize: json['size'] as int,
-      totalElements: json['numberOfElements'] as int,
+      totalElements: json['totalElements'] as int,
       isFirst: json['first'] as bool,
       isLast: json['last'] as bool,
       empty: json['empty'] as bool,

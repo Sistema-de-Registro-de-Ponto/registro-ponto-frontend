@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:registro_ponto_frontend/core/utils/constants.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_profile.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/views/manager_collaborators_body.dart';
+import 'package:registro_ponto_frontend/features/manager/presentation/views/manager_journeys_body.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/views/manager_overview_body.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/widgets/manager_nav_destination.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/widgets/manager_sidebar.dart';
@@ -154,6 +155,7 @@ class _DestinationBody extends StatelessWidget {
       child: switch (destination) {
         ManagerNavDestination.overview => const ManagerOverviewBody(),
         ManagerNavDestination.collaborators => const ManagerCollaboratorsBody(),
+        ManagerNavDestination.journeys => const ManagerJourneysBody(),
         _ => const AppDeveloping(),
       },
     );

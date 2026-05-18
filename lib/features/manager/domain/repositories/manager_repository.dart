@@ -1,8 +1,10 @@
 import 'package:registro_ponto_frontend/core/pagination/page.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
+import 'package:registro_ponto_frontend/features/journey/domain/entities/journey.dart';
 
 import '../entities/manager_collaborator.dart';
 import '../entities/manager_collaborator_detail.dart';
+import '../entities/manager_journey_list_item.dart';
 import '../entities/manager_overview.dart';
 import '../entities/manager_profile.dart';
 
@@ -23,4 +25,14 @@ abstract class ManagerRepository {
   Future<Result<ManagerCollaboratorDetail, String>> fetchCollaboratorById(
     int id,
   );
+
+  Future<Result<Page<ManagerJourneyListItem>, String>> fetchJourneys({
+    required int page,
+    required int pageSize,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? collaboratorName,
+  });
+
+  Future<Result<Journey, String>> fetchJourneyById(int id);
 }
