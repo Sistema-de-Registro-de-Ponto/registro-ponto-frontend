@@ -35,9 +35,9 @@ class JourneyHistoryHeader extends StatelessWidget {
       ),
 
       desktop: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _TitleBlock(theme: theme),
+          Expanded(child: _TitleBlock(theme: theme)),
           AppPeriodField(
             startDate: startDate,
             endDate: endDate,

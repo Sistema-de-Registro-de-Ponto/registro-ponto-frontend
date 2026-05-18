@@ -127,8 +127,7 @@ void main() {
         pageSize: 20,
       ),
     ).thenAnswer(
-      (_) async =>
-          Success(JourneyPage(journeys: [secondJourney], last: true)),
+      (_) async => Success(JourneyPage(journeys: [secondJourney], last: true)),
     );
 
     container.read(journeyHistoryViewModelProvider);
@@ -181,10 +180,7 @@ void main() {
 
     container.read(journeyHistoryViewModelProvider);
     await notifier().changePeriod(
-      DateTimeRange(
-        start: DateTime(2025, 5, 1),
-        end: DateTime(2025, 5, 10),
-      ),
+      DateTimeRange(start: DateTime(2025, 5, 1), end: DateTime(2025, 5, 10)),
     );
 
     final state = readState();

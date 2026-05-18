@@ -4,12 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/journey/data/repositories/journey_repository_provider.dart';
-import 'package:registro_ponto_frontend/features/journey/domain/entities/journey.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_page.dart';
-import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_status.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/repositories/journey_repository.dart';
 import 'package:registro_ponto_frontend/features/journey/presentation/view_models/journey_history_view_model.dart';
 import 'package:registro_ponto_frontend/features/journey/presentation/views/journey_history_body.dart';
+
 import '../widgets/history/journey_history_test_helpers.dart';
 
 class _MockJourneyRepository extends Mock implements JourneyRepository {}

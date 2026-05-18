@@ -124,7 +124,7 @@ void main() {
     final inProgress = buildJourney(status: JourneyStatus.inProgress);
 
     expect(completed.historyExitLabel, '18:05');
-    expect(inProgress.historyExitLabel, '-');
+    expect(inProgress.historyExitLabel, '--:--');
   });
 
   test('historyTotalHoursLabel usa duration ou tempo decorrido', () {

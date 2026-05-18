@@ -46,6 +46,8 @@ extension DateTimeExtensions on DateTime {
     final end = isUtc ? toLocal() : this;
     return end.difference(start);
   }
+
+  DateTime get dateOnly => DateTime(year, month, day);
 }
 
 extension DurationExtensions on Duration {

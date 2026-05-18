@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:registro_ponto_frontend/core/utils/constants.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_profile.dart';
+import 'package:registro_ponto_frontend/features/manager/presentation/view_models/manager_overview_view_model.dart';
+import 'package:registro_ponto_frontend/features/manager/presentation/views/manager_overview_body.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/widgets/manager_nav_destination.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/widgets/manager_page_header.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/widgets/manager_sidebar.dart';
@@ -91,7 +93,7 @@ class _ManagerShellLoadedState extends ConsumerState<ManagerShellLoaded> {
   }
 }
 
-class _MainArea extends StatelessWidget {
+class _MainArea extends ConsumerWidget {
   final ManagerProfile profile;
   final ManagerNavDestination selected;
   final VoidCallback onMenuTap;
@@ -103,8 +105,14 @@ class _MainArea extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final overviewState = selected == ManagerNavDestination.overview
+        ? ref.watch(managerOverviewViewModelProvider)
+        : null;
+    final overviewNotifier = selected == ManagerNavDestination.overview
+        ? ref.read(managerOverviewViewModelProvider.notifier)
+        : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -135,7 +143,12 @@ class _MainArea extends StatelessWidget {
             ),
           ),
         ),
-        ManagerPageHeader(destination: selected),
+        ManagerPageHeader(
+          destination: selected,
+          startDate: overviewState?.startDate,
+          endDate: overviewState?.endDate,
+          onPeriodChanged: overviewNotifier?.changePeriod,
+        ),
         Expanded(child: _DestinationBody(destination: selected)),
       ],
     );
@@ -152,7 +165,7 @@ class _DestinationBody extends StatelessWidget {
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: Constants.desktopBreakpoint),
       child: switch (destination) {
-        ManagerNavDestination.overview => const SizedBox.shrink(),
+        ManagerNavDestination.overview => const ManagerOverviewBody(),
         _ => const AppDeveloping(),
       },
     );

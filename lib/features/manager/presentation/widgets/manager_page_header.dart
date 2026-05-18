@@ -6,12 +6,21 @@ import 'package:registro_ponto_frontend/shared/app_responsive.dart';
 
 class ManagerPageHeader extends StatelessWidget {
   final ManagerNavDestination destination;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final ValueChanged<DateTimeRange>? onPeriodChanged;
 
-  const ManagerPageHeader({super.key, required this.destination});
+  const ManagerPageHeader({
+    super.key,
+    required this.destination,
+    this.startDate,
+    this.endDate,
+    this.onPeriodChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final today = DateTime.now();
+    final periodField = _buildPeriodField();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
@@ -22,12 +31,7 @@ class ManagerPageHeader extends StatelessWidget {
           spacing: 16,
           children: [
             _TitleBlock(destination: destination),
-            if (destination.showDateFilters)
-              AppPeriodField(
-                startDate: today,
-                endDate: today,
-                onPeriodChanged: (period) {}, // TODO: Implement period change
-              ),
+            ?periodField,
           ],
         ),
         desktop: Center(
@@ -37,18 +41,27 @@ class ManagerPageHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(child: _TitleBlock(destination: destination)),
-                if (destination.showDateFilters)
-                  AppPeriodField(
-                    startDate: today,
-                    endDate: today,
-                    onPeriodChanged:
-                        (period) {}, // TODO: Implement period change
-                  ),
+                ?periodField,
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget? _buildPeriodField() {
+    if (!destination.showDateFilters) return null;
+
+    final start = startDate;
+    final end = endDate;
+    final onChanged = onPeriodChanged;
+    if (start == null || end == null || onChanged == null) return null;
+
+    return AppPeriodField(
+      startDate: start,
+      endDate: end,
+      onPeriodChanged: onChanged,
     );
   }
 }

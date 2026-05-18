@@ -33,7 +33,7 @@ final class SplashViewModelProvider
   SplashViewModel create() => SplashViewModel();
 }
 
-String _$splashViewModelHash() => r'968b5161609ef0a5f47adbf2564728702c892d85';
+String _$splashViewModelHash() => r'529d05918c0b8acf8be5634a0613a23e1ef1997a';
 
 abstract class _$SplashViewModel extends $AsyncNotifier<SplashDestination> {
   FutureOr<SplashDestination> build();
