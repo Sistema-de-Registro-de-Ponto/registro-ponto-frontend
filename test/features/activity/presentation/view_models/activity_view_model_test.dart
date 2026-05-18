@@ -139,7 +139,7 @@ void main() {
     expect(readState().isLoading, isFalse);
     expect(readState().description, isEmpty);
     expect(readState().activities, [created]);
-    expect(readState().activities.single.timeLabel, '12:08');
+    expect(readState().activities.single.timeLabel, created.timeLabel);
     expect(readState().failure, isNull);
   });
 
