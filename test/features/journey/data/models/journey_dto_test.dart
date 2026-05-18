@@ -48,11 +48,13 @@ void main() {
     expect(dto.plannedActivities.last.checked, isFalse);
 
     final entity = dto.toEntity();
-    expect(entity.startedHourLabel, '08:03');
+    expect(entity.startedHourLabel, startedAt.formattedHourShort);
     expect(entity.plannedActivities.first.checked, isTrue);
   });
 
   test('fromJson mapeia unplanned_activities', () {
+    final unplannedCreatedAt = DateTime.parse('2026-05-15T09:15:00-03:00').toLocal();
+
     final dto = JourneyDto.fromJson({
       'id': 10,
       'collaborator_id': 4,
@@ -77,7 +79,10 @@ void main() {
     expect(dto.unplannedActivities.single.description, 'Ajuste em regra de permissão');
 
     final entity = dto.toEntity();
-    expect(entity.unplannedActivities.single.createdAt.formattedHourShort, '09:15');
+    expect(
+      entity.unplannedActivities.single.createdAt.formattedHourShort,
+      unplannedCreatedAt.formattedHourShort,
+    );
   });
 
   test('fromJson mapeia ended_at, duration_seconds e summary quando presentes', () {
