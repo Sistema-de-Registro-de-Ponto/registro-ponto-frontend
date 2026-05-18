@@ -42,7 +42,7 @@ final class ManagerOverviewViewModelProvider
 }
 
 String _$managerOverviewViewModelHash() =>
-    r'1fb6a810b100a1cc8df522788da25ea1ad491007';
+    r'94b1192f7aeb03a4a9f2fd096df387ad3c773b8f';
 
 abstract class _$ManagerOverviewViewModel
     extends $Notifier<ManagerOverviewState> {

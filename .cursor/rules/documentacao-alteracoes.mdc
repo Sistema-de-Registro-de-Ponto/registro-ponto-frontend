@@ -1,0 +1,25 @@
+---
+description: Documentar ou atualizar docs quando alterações no código mudarem comportamento, contratos ou convenções.
+alwaysApply: true
+---
+
+# Documentação alinhada ao código
+
+Sempre que uma alteração **refletir no código** (comportamento, contratos, arquitetura, APIs, convenções ou fluxos de uso), **documentar ou atualizar** a documentação existente no mesmo PR/tarefa — não deixar docs desatualizados.
+
+## O que atualizar (conforme o impacto)
+
+- **README.md** — setup, execução, dependências, visão geral da app ou instruções que mudaram.
+- **`.cursor/rules/`** — novas convenções, padrões de DTO/parsing, estilo ou decisões que devem guiar o agente daqui em diante.
+- **Comentários de longo prazo no código** — só quando forem documentação estável (contrato não óbvio, invariante de domínio); não comentários temporários (ver regra de estilo Dart).
+- **Descrições de testes** — se o comportamento testado mudou, ajustar `test('...')` / `testWidgets('...')` em português para descrever o novo contrato.
+- **Outros markdown do repositório** — qualquer `.md` que descreva a feature, endpoint ou fluxo alterado.
+
+## Quando não é obrigatório
+
+- Refactors internos sem mudança de comportamento observável nem de contrato público.
+- Ajustes puramente visuais sem nova regra de produto ou integração.
+
+## Na entrega
+
+Incluir na resposta (ou no PR) **o que foi documentado/atualizado** ou declarar explicitamente que nenhum doc precisou mudar e por quê.

@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:registro_ponto_frontend/core/utils/constants.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/view_models/manager_overview_view_model.dart';
+import 'package:registro_ponto_frontend/features/manager/presentation/widgets/manager_nav_destination.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/widgets/manager_overview_metrics_row.dart';
+import 'package:registro_ponto_frontend/features/manager/presentation/widgets/manager_page_header.dart';
 import 'package:registro_ponto_frontend/shared/app_error.dart';
 import 'package:registro_ponto_frontend/shared/app_error_banner.dart';
 import 'package:registro_ponto_frontend/shared/app_loading.dart';
+import 'package:registro_ponto_frontend/shared/app_period_field.dart';
 
 class ManagerOverviewBody extends ConsumerStatefulWidget {
   const ManagerOverviewBody({super.key});
 
   @override
-  ConsumerState<ManagerOverviewBody> createState() => _ManagerOverviewBodyState();
+  ConsumerState<ManagerOverviewBody> createState() =>
+      _ManagerOverviewBodyState();
 }
 
 class _ManagerOverviewBodyState extends ConsumerState<ManagerOverviewBody> {
@@ -50,13 +54,23 @@ class _ManagerOverviewBodyState extends ConsumerState<ManagerOverviewBody> {
       child: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: Constants.desktopBreakpoint),
+          constraints: const BoxConstraints(
+            maxWidth: Constants.desktopBreakpoint,
+          ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: 16,
               children: [
+                ManagerPageHeader(
+                  destination: ManagerNavDestination.overview,
+                  suffix: AppPeriodField(
+                    startDate: state.startDate,
+                    endDate: state.endDate,
+                    onPeriodChanged: notifier.changePeriod,
+                  ),
+                ),
                 if (state.failure case final failure?)
                   AppErrorBanner(message: failure),
                 if (state.isLoading)

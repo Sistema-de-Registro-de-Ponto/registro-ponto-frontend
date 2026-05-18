@@ -12,7 +12,7 @@ enum ManagerNavDestination {
   collaborators(
     label: 'Colaboradores',
     pageTitle: 'Colaboradores',
-    pageSubtitle: 'Gestão da equipe',
+    pageSubtitle: 'Visualize e consulte os colaboradores cadastrados',
     icon: Icons.groups_outlined,
     selectedIcon: Icons.groups_rounded,
   ),

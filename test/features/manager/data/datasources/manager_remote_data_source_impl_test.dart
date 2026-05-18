@@ -58,4 +58,61 @@ void main() {
       ).called(1);
     },
   );
+
+  test(
+    'fetchCollaborators chama GET /v1/manager/collaborators com page, size e search',
+    () async {
+      const pageJson = <String, dynamic>{
+        'content': <Map<String, dynamic>>[
+          <String, dynamic>{
+            'id': 1,
+            'first_name': 'Maria',
+            'current_journey_status': 'in_progress',
+            'hours_today_seconds': 8100,
+            'adherence_percentage': 95,
+          },
+        ],
+        'number': 0,
+        'size': 10,
+        'total_elements': 1,
+        'first': true,
+        'last': true,
+        'empty': false,
+      };
+
+      when(
+        () => dio.get<Map<String, dynamic>>(
+          '/v1/manager/collaborators',
+          queryParameters: <String, dynamic>{
+            'page': 0,
+            'size': 10,
+            'search': 'maria',
+          },
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          data: pageJson,
+          requestOptions: RequestOptions(path: '/v1/manager/collaborators'),
+        ),
+      );
+
+      final dto = await dataSource.fetchCollaborators(
+        page: 0,
+        pageSize: 10,
+        query: 'maria',
+      );
+
+      expect(dto.content.first.firstName, 'Maria');
+      verify(
+        () => dio.get<Map<String, dynamic>>(
+          '/v1/manager/collaborators',
+          queryParameters: <String, dynamic>{
+            'page': 0,
+            'size': 10,
+            'search': 'maria',
+          },
+        ),
+      ).called(1);
+    },
+  );
 }

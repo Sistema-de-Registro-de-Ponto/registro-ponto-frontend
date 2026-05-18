@@ -24,7 +24,9 @@ class ManagerSidebar extends StatelessWidget {
       child: Container(
         width: width,
         decoration: BoxDecoration(
-          border: Border(right: BorderSide(color: theme.colorScheme.outlineVariant)),
+          border: Border(
+            right: BorderSide(color: theme.colorScheme.outlineVariant),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -34,7 +36,8 @@ class ManagerSidebar extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  for (final destination in ManagerNavDestination.mainDestinations)
+                  for (final destination
+                      in ManagerNavDestination.mainDestinations)
                     ManagerNavItem(
                       label: destination.label,
                       icon: destination.icon,
@@ -71,22 +74,11 @@ class _SidebarHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
+        border: Border(
+          bottom: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
       ),
-      child: Row(
-        children: [
-          const AppBrandLogo(compact: true, iconSize: 32, showTitle: false),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Área de Gestão',
-              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
+      child: const AppBrandLogo(compact: true, iconSize: 32),
     );
   }
 }

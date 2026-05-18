@@ -3,9 +3,13 @@ import 'package:mocktail/mocktail.dart';
 import 'package:registro_ponto_frontend/core/network/api_exception.dart';
 import 'package:registro_ponto_frontend/core/utils/result.dart';
 import 'package:registro_ponto_frontend/features/manager/data/datasources/manager_remote_data_source.dart';
+import 'package:registro_ponto_frontend/features/journey/domain/entities/journey_status.dart';
+import 'package:registro_ponto_frontend/core/pagination/page_dto.dart';
+import 'package:registro_ponto_frontend/features/manager/data/models/manager_collaborator_dto.dart';
 import 'package:registro_ponto_frontend/features/manager/data/models/manager_overview_dto.dart';
 import 'package:registro_ponto_frontend/features/manager/data/models/manager_profile_dto.dart';
 import 'package:registro_ponto_frontend/features/manager/data/repositories/manager_repository_impl.dart';
+import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_collaborator.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_overview.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_profile.dart';
 
@@ -116,4 +120,46 @@ void main() {
       );
     },
   );
+
+  test('fetchCollaborators em sucesso devolve página de colaboradores', () async {
+    when(
+      () => remote.fetchCollaborators(page: 0, pageSize: 10, query: 'maria'),
+    ).thenAnswer(
+      (_) async => PageDto(
+        content: [
+          ManagerCollaboratorDto(
+            id: 1,
+            firstName: 'Maria',
+            currentJourneyStatus: JourneyStatus.inProgress,
+            hoursTodaySeconds: 8100,
+            adherencePercentage: 95,
+          ),
+        ],
+        pageNumber: 0,
+        pageSize: 10,
+        totalElements: 1,
+        isFirst: true,
+        isLast: true,
+        empty: false,
+      ),
+    );
+
+    final result = await repository.fetchCollaborators(
+      page: 0,
+      pageSize: 10,
+      query: 'maria',
+    );
+
+    expect(result, isA<Success>());
+    final page = (result as Success).value;
+    expect(page.content, [
+      const ManagerCollaborator(
+        id: 1,
+        firstName: 'Maria',
+        currentJourneyStatus: JourneyStatus.inProgress,
+        hoursTodaySeconds: 8100,
+        adherencePercentage: 95,
+      ),
+    ]);
+  });
 }
