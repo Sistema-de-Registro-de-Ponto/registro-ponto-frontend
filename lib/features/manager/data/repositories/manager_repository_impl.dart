@@ -5,6 +5,7 @@ import 'package:registro_ponto_frontend/core/pagination/page.dart';
 import 'package:registro_ponto_frontend/features/journey/domain/entities/journey.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_collaborator.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_collaborator_detail.dart';
+import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_consolidated_report.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_journey_list_item.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_overview.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_profile.dart';
@@ -109,6 +110,30 @@ class ManagerRepositoryImpl implements ManagerRepository {
   Future<Result<Journey, String>> fetchJourneyById(int id) async {
     try {
       final dto = await _remote.fetchJourneyById(id);
+      return Success(dto.toEntity());
+    } on ApiException catch (e) {
+      return Failure(e.message);
+    } catch (e) {
+      return Failure(e.toErrorString());
+    }
+  }
+
+  @override
+  Future<Result<ManagerConsolidatedReport, String>> fetchConsolidatedReport({
+    required DateTime startDate,
+    required DateTime endDate,
+    required int page,
+    required int pageSize,
+    String? search,
+  }) async {
+    try {
+      final dto = await _remote.fetchConsolidatedReport(
+        startDate: startDate,
+        endDate: endDate,
+        page: page,
+        pageSize: pageSize,
+        search: search,
+      );
       return Success(dto.toEntity());
     } on ApiException catch (e) {
       return Failure(e.message);

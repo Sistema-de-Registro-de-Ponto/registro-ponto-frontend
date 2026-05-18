@@ -83,7 +83,8 @@ flutter analyze
   - **Visão geral** — `GET /v1/manager/overview?start_date=yyyy-MM-dd&end_date=yyyy-MM-dd`. Resposta: `duration_seconds`, `journeys_progress`, `average_adherence_percentage`, `activities_completed`, `unplanned_activities`. Filtro de período no header (`AppPeriodField`).
   - **Colaboradores** — listagem paginada e busca; detalhe com jornada atual quando existir.
   - **Jornadas** — consulta paginada de jornadas dos colaboradores; detalhe via `GET /v1/manager/journeys/{id}`.
-- **Destinos ainda em desenvolvimento** (`AppDeveloping`): Relatórios, RPA, Configurações.
+  - **Relatórios** — relatório consolidado com métricas globais e tabela por colaborador; ver secção abaixo.
+- **Destinos ainda em desenvolvimento** (`AppDeveloping`): RPA, Configurações.
 - **Colaboradores (API):**
   - **Listagem:** `GET /v1/manager/collaborators?page=<int>&size=<int>&search=<string?>` — `search` opcional (debounce na UI). Resposta no formato **página Spring** (ver secção **Paginação**). Cada item em `content`:
     - `id`, `first_name`, `current_journey_status` (`in_progress` | `completed` | …), `hours_today_seconds`, `adherence_percentage` (pode ser `null`).
@@ -93,6 +94,9 @@ flutter analyze
   - **Listagem:** `GET /v1/manager/journeys?page=<int>&size=<int>` — padrão do backend: jornadas de **hoje** (sem `start_date`/`end_date`). Com filtro de período: `start_date`, `end_date` (`yyyy-MM-dd`). Busca por nome: `collaborator_name` (opcional). Resposta no formato **página Spring** (ver **Paginação**). Cada item em `content`: `id`, `journey_date`, `collaborator_id`, `collaborator_first_name`, `started_at`, `ended_at` (opcional), `duration_seconds`, `status` (`in_progress` | `completed`).
   - **Detalhe:** `GET /v1/manager/journeys/{id}` — mesmo contrato de `JourneyDto` (atividades planejadas/não planejadas, resumo, etc.).
 - **Jornadas (UI):** `ManagerJourneysBody` — período (`AppPeriodField`, exibido como hoje até o utilizador alterar; só então envia datas), busca por nome do colaborador, tabela (`ManagerJourneysTable`, sem coluna de aderência), paginação (`AppDataTablePagination`). Ícone de detalhes: `JourneyDetailDialog` após `fetchJourneyById`.
+- **Relatórios consolidados (API):**
+  - **Consulta:** `GET /v1/manager/reports/consolidated?start_date=yyyy-MM-dd&end_date=yyyy-MM-dd&page=<int>&size=<int>&search=<string?>`. Resposta: `period` (`start_date`, `end_date`), `summary` (`duration_seconds`, `planned_activities`, `activities_completed`, `unplanned_activities`, `average_adherence_percentage`), `collaborators` (página Spring). Cada item em `collaborators.content`: `id`, `first_name`, `duration_seconds`, `planned_activities`, `activities_completed`, `unplanned_activities`, `adherence_percentage`.
+- **Relatórios consolidados (UI):** `ManagerReportsBody` — período inicial hoje (`AppPeriodField`), busca por nome (`search`, debounce), cards de métricas (`ManagerReportsMetricsRow`) e tabela (`ManagerReportsTable`) com paginação (`AppDataTablePagination`). Sem ação de detalhe por linha.
 
 ### Paginação (Spring) e componentes de tabela
 

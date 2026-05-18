@@ -3,6 +3,7 @@ import 'package:registro_ponto_frontend/features/journey/data/models/journey_dto
 import '../../../../core/pagination/page_dto.dart';
 import '../models/manager_collaborator_detail_dto.dart';
 import '../models/manager_collaborator_dto.dart';
+import '../models/manager_consolidated_report_dto.dart';
 import '../models/manager_journey_list_item_dto.dart';
 import '../models/manager_overview_dto.dart';
 import '../models/manager_profile_dto.dart';
@@ -32,4 +33,12 @@ abstract class ManagerRemoteDataSource {
   });
 
   Future<JourneyDto> fetchJourneyById(int id);
+
+  Future<ManagerConsolidatedReportDto> fetchConsolidatedReport({
+    required DateTime startDate,
+    required DateTime endDate,
+    required int page,
+    required int pageSize,
+    String? search,
+  });
 }

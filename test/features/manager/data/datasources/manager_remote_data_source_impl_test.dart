@@ -217,4 +217,85 @@ void main() {
       ).called(1);
     },
   );
+
+  test(
+    'fetchConsolidatedReport chama GET /v1/manager/reports/consolidated com período, page e search',
+    () async {
+      const reportJson = <String, dynamic>{
+        'period': <String, dynamic>{
+          'start_date': '2026-05-01',
+          'end_date': '2026-05-18',
+        },
+        'summary': <String, dynamic>{
+          'duration_seconds': 45000,
+          'planned_activities': 42,
+          'activities_completed': 30,
+          'unplanned_activities': 8,
+          'average_adherence_percentage': 71,
+        },
+        'collaborators': <String, dynamic>{
+          'content': <Map<String, dynamic>>[
+            <String, dynamic>{
+              'id': 1,
+              'first_name': 'Natanael',
+              'duration_seconds': 12600,
+              'planned_activities': 10,
+              'activities_completed': 7,
+              'unplanned_activities': 2,
+              'adherence_percentage': 70,
+            },
+          ],
+          'number': 0,
+          'size': 10,
+          'totalElements': 1,
+          'first': true,
+          'last': true,
+          'empty': false,
+        },
+      };
+
+      when(
+        () => dio.get<Map<String, dynamic>>(
+          '/v1/manager/reports/consolidated',
+          queryParameters: <String, dynamic>{
+            'start_date': '2026-05-01',
+            'end_date': '2026-05-18',
+            'page': 0,
+            'size': 10,
+            'search': 'nat',
+          },
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          data: reportJson,
+          requestOptions: RequestOptions(
+            path: '/v1/manager/reports/consolidated',
+          ),
+        ),
+      );
+
+      final dto = await dataSource.fetchConsolidatedReport(
+        startDate: DateTime(2026, 5, 1),
+        endDate: DateTime(2026, 5, 18),
+        page: 0,
+        pageSize: 10,
+        search: 'nat',
+      );
+
+      expect(dto.summary.plannedActivities, 42);
+      expect(dto.collaborators.content.first.firstName, 'Natanael');
+      verify(
+        () => dio.get<Map<String, dynamic>>(
+          '/v1/manager/reports/consolidated',
+          queryParameters: <String, dynamic>{
+            'start_date': '2026-05-01',
+            'end_date': '2026-05-18',
+            'page': 0,
+            'size': 10,
+            'search': 'nat',
+          },
+        ),
+      ).called(1);
+    },
+  );
 }

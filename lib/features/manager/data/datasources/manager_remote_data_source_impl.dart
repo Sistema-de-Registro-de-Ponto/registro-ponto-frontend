@@ -7,6 +7,7 @@ import 'package:registro_ponto_frontend/features/journey/data/models/journey_dto
 
 import '../models/manager_collaborator_detail_dto.dart';
 import '../models/manager_collaborator_dto.dart';
+import '../models/manager_consolidated_report_dto.dart';
 import '../models/manager_journey_list_item_dto.dart';
 import '../models/manager_overview_dto.dart';
 import '../models/manager_profile_dto.dart';
@@ -122,6 +123,33 @@ class ManagerRemoteDataSourceImpl implements ManagerRemoteDataSource {
         '/v1/manager/journeys/$id',
       );
       return JourneyDto.fromJson(response.data!);
+    } on DioException catch (e) {
+      throw e.mapDioException();
+    }
+  }
+
+  @override
+  Future<ManagerConsolidatedReportDto> fetchConsolidatedReport({
+    required DateTime startDate,
+    required DateTime endDate,
+    required int page,
+    required int pageSize,
+    String? search,
+  }) async {
+    try {
+      final queryParameters = <String, dynamic>{
+        'start_date': startDate.formattedApiDate,
+        'end_date': endDate.formattedApiDate,
+        'page': page,
+        'size': pageSize,
+        if (search != null && search.isNotEmpty) 'search': search,
+      };
+
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/v1/manager/reports/consolidated',
+        queryParameters: queryParameters,
+      );
+      return ManagerConsolidatedReportDto.fromJson(response.data!);
     } on DioException catch (e) {
       throw e.mapDioException();
     }
