@@ -6,6 +6,7 @@ import 'package:registro_ponto_frontend/features/manager/presentation/views/mana
 import 'package:registro_ponto_frontend/features/manager/presentation/views/manager_journeys_body.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/views/manager_overview_body.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/views/manager_reports_body.dart';
+import 'package:registro_ponto_frontend/features/manager/presentation/views/manager_rpa_body.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/widgets/manager_nav_destination.dart';
 import 'package:registro_ponto_frontend/features/manager/presentation/widgets/manager_sidebar.dart';
 import 'package:registro_ponto_frontend/shared/app_developing.dart';
@@ -158,6 +159,7 @@ class _DestinationBody extends StatelessWidget {
         ManagerNavDestination.collaborators => const ManagerCollaboratorsBody(),
         ManagerNavDestination.journeys => const ManagerJourneysBody(),
         ManagerNavDestination.reports => const ManagerReportsBody(),
+        ManagerNavDestination.rpa => const ManagerRpaBody(),
         _ => const AppDeveloping(),
       },
     );

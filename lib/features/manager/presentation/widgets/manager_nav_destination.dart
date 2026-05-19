@@ -33,7 +33,7 @@ enum ManagerNavDestination {
   rpa(
     label: 'RPA',
     pageTitle: 'RPA',
-    pageSubtitle: 'Automações e integrações',
+    pageSubtitle: 'Registros importados do portal externo',
     icon: Icons.smart_toy_outlined,
     selectedIcon: Icons.smart_toy_rounded,
   ),

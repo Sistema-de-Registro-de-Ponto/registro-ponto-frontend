@@ -8,6 +8,7 @@ import '../entities/manager_consolidated_report.dart';
 import '../entities/manager_journey_list_item.dart';
 import '../entities/manager_overview.dart';
 import '../entities/manager_profile.dart';
+import '../entities/manager_rpa_record.dart';
 
 abstract class ManagerRepository {
   Future<Result<ManagerProfile, String>> fetchProfile();
@@ -42,6 +43,14 @@ abstract class ManagerRepository {
     required DateTime endDate,
     required int page,
     required int pageSize,
+    String? search,
+  });
+
+  Future<Result<Page<ManagerRpaRecord>, String>> fetchRpaRecords({
+    required int page,
+    required int pageSize,
+    DateTime? startDate,
+    DateTime? endDate,
     String? search,
   });
 }

@@ -9,6 +9,7 @@ import 'package:registro_ponto_frontend/features/manager/domain/entities/manager
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_journey_list_item.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_overview.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_profile.dart';
+import 'package:registro_ponto_frontend/features/manager/domain/entities/manager_rpa_record.dart';
 import 'package:registro_ponto_frontend/features/manager/domain/repositories/manager_repository.dart';
 
 import '../datasources/manager_remote_data_source.dart';
@@ -135,6 +136,30 @@ class ManagerRepositoryImpl implements ManagerRepository {
         search: search,
       );
       return Success(dto.toEntity());
+    } on ApiException catch (e) {
+      return Failure(e.message);
+    } catch (e) {
+      return Failure(e.toErrorString());
+    }
+  }
+
+  @override
+  Future<Result<Page<ManagerRpaRecord>, String>> fetchRpaRecords({
+    required int page,
+    required int pageSize,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? search,
+  }) async {
+    try {
+      final dto = await _remote.fetchRpaRecords(
+        page: page,
+        pageSize: pageSize,
+        startDate: startDate,
+        endDate: endDate,
+        search: search,
+      );
+      return Success(dto.toEntity((item) => item.toEntity()));
     } on ApiException catch (e) {
       return Failure(e.message);
     } catch (e) {

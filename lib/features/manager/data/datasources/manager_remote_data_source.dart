@@ -7,6 +7,7 @@ import '../models/manager_consolidated_report_dto.dart';
 import '../models/manager_journey_list_item_dto.dart';
 import '../models/manager_overview_dto.dart';
 import '../models/manager_profile_dto.dart';
+import '../models/manager_rpa_record_dto.dart';
 
 abstract class ManagerRemoteDataSource {
   Future<ManagerProfileDto> fetchProfile();
@@ -39,6 +40,14 @@ abstract class ManagerRemoteDataSource {
     required DateTime endDate,
     required int page,
     required int pageSize,
+    String? search,
+  });
+
+  Future<PageDto<ManagerRpaRecordDto>> fetchRpaRecords({
+    required int page,
+    required int pageSize,
+    DateTime? startDate,
+    DateTime? endDate,
     String? search,
   });
 }

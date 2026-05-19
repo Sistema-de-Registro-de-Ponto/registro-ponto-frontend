@@ -11,6 +11,7 @@ import '../models/manager_consolidated_report_dto.dart';
 import '../models/manager_journey_list_item_dto.dart';
 import '../models/manager_overview_dto.dart';
 import '../models/manager_profile_dto.dart';
+import '../models/manager_rpa_record_dto.dart';
 import 'manager_remote_data_source.dart';
 
 class ManagerRemoteDataSourceImpl implements ManagerRemoteDataSource {
@@ -150,6 +151,36 @@ class ManagerRemoteDataSourceImpl implements ManagerRemoteDataSource {
         queryParameters: queryParameters,
       );
       return ManagerConsolidatedReportDto.fromJson(response.data!);
+    } on DioException catch (e) {
+      throw e.mapDioException();
+    }
+  }
+
+  @override
+  Future<PageDto<ManagerRpaRecordDto>> fetchRpaRecords({
+    required int page,
+    required int pageSize,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? search,
+  }) async {
+    try {
+      final queryParameters = <String, dynamic>{
+        'page': page,
+        'size': pageSize,
+        if (startDate != null) 'start_date': startDate.formattedApiDate,
+        if (endDate != null) 'end_date': endDate.formattedApiDate,
+        if (search != null && search.isNotEmpty) 'search': search,
+      };
+
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/v1/manager/rpa/records',
+        queryParameters: queryParameters,
+      );
+      return PageDto.fromJson(
+        response.data!,
+        ManagerRpaRecordDto.fromJson,
+      );
     } on DioException catch (e) {
       throw e.mapDioException();
     }
