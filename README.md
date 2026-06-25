@@ -2,6 +2,15 @@
 
 Frontend **Flutter Web** do sistema de registro de ponto da Player Contabilidade. Inclui **login** (JWT, sessão no `SecureStorage`, auto-logout em `401`), **área do colaborador** em `/` e **área de gestão** em `/management` (conforme o `role` devolvido no login).
 
+### Arquitetura
+
+```mermaid
+flowchart LR
+    UI[Flutter Web] -->|JWT REST| API[Spring Boot Backend]
+    RPA[Python RPA] -->|API Key| API
+    API --> DB[(MySQL)]
+```
+
 ### Repositórios do sistema
 
 | Repositório | Descrição |
